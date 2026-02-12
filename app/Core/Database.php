@@ -24,6 +24,7 @@ class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
+            self::ensureCoreSchema(self::$connection);
         } catch (Throwable $e) {
             throw new RuntimeException('No se pudo conectar a MySQL. Revisa DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASS.', 0, $e);
         }
