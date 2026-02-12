@@ -75,7 +75,7 @@ class Owner
 
     public function update(int $id, array $data, int $actorId): void
     {
-        $sql = 'UPDATE owners SET rut=:rut, nombre_completo=:nombre, telefono=:telefono, email=:email, direccion=:direccion, observacion=:observacion, estado=:estado, updated_at=NOW() WHERE id=:id';
+        $sql = 'UPDATE owners SET rut=:rut, nombre_completo=:nombre, telefono=:telefono, email=:email, direccion=:direccion, observacion=:observacion, estado=:estado, updated_at=CURRENT_TIMESTAMP WHERE id=:id';
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([
             'id' => $id,
@@ -93,7 +93,7 @@ class Owner
 
     public function softDelete(int $id, int $actorId): void
     {
-        $stmt = Database::connection()->prepare("UPDATE owners SET estado='INACTIVO', deleted_at=NOW(), updated_at=NOW() WHERE id=:id");
+        $stmt = Database::connection()->prepare("UPDATE owners SET estado='INACTIVO', deleted_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE id=:id");
         $stmt->execute(['id' => $id]);
         $this->audit('owners', $id, 'INACTIVATE', $actorId, ['estado' => 'INACTIVO']);
     }

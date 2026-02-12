@@ -1,9 +1,13 @@
 <?php 
 	 require_once __DIR__ . '/config/dz.php';
 
-	if (isset($_GET['controller']) && $_GET['controller'] === 'owners') {
+	if (isset($_GET['controller']) && in_array($_GET['controller'], ['owners','module'], true)) {
 		require_once __DIR__ . '/app/bootstrap.php';
-		$controller = new OwnerController();
+		if ($_GET['controller'] === 'owners') {
+			$controller = new OwnerController();
+		} else {
+			$controller = new ModuleController();
+		}
 		$controller->index();
 		exit;
 	}

@@ -1,20 +1,18 @@
 # Actualización de Base de Datos
 
-## Migraciones a ejecutar
-
+## Migraciones a ejecutar (orden)
 1. `database/migrations/001_initial_schema.sql`
 2. `database/migrations/002_owners_module.sql`
+3. `database/migrations/003_vet_clinic_modules.sql`
 
-## Ejecución recomendada
-
+## Ejecución
 ```bash
 mysql -u root -p < database/migrations/001_initial_schema.sql
 mysql -u root -p < database/migrations/002_owners_module.sql
+mysql -u root -p < database/migrations/003_vet_clinic_modules.sql
 ```
 
-## Qué agrega `002_owners_module.sql`
-
-- Tabla `owners` para el mantenimiento de propietarios.
-- Tabla `pets` mínima (soporte para conteo de mascotas por propietario).
-- Tabla `audit_logs` para auditoría de crear/editar/inactivar.
-- Permisos `owners.*` y asignación automática a `SuperRoot` y `Administrador`.
+## Alcance de la 003
+- Mascotas (estructura completa), Veterinarios, Citas, Ficha Clínica, Vacunas, Desparasitación.
+- Productos/Inventario, Facturación/Caja, Hospitalización, Cirugías, Laboratorio y Reportes.
+- Inserción de permisos de todos los módulos y asignación inicial a `SuperRoot` y `Administrador`.

@@ -1,4 +1,11 @@
-<?php require_once __DIR__ . '/../../../config/dz.php'; ?>
+<?php
+if (!isset($DexignZoneSettings)) {
+    include __DIR__ . '/../../../config/dz.php';
+}
+if (!isset($CurrentPage)) {
+    $CurrentPage = 'index';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

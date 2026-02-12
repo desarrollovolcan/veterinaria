@@ -5,8 +5,10 @@ session_start();
 require_once __DIR__ . '/Core/Database.php';
 require_once __DIR__ . '/Core/Auth.php';
 require_once __DIR__ . '/Models/Owner.php';
+require_once __DIR__ . '/Models/ModuleRepository.php';
 require_once __DIR__ . '/Controllers/BaseController.php';
 require_once __DIR__ . '/Controllers/OwnerController.php';
+require_once __DIR__ . '/Controllers/ModuleController.php';
 
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
