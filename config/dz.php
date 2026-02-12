@@ -46,6 +46,7 @@
 			'css' => [
 				'vendor/bootstrap-select/dist/css/bootstrap-select.min.css',
 				'css/style.css',
+				'css/clinic-blue-theme.css',
 			],
 			'js' => [
 				'top'=> [
