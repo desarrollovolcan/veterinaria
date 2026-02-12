@@ -14,6 +14,15 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+if (!isset($_SESSION['clinic_profile'])) {
+    try {
+        $clinicStmt = Database::connection()->query("SELECT * FROM clinic_profile ORDER BY id DESC LIMIT 1");
+        $_SESSION['clinic_profile'] = $clinicStmt->fetch() ?: [];
+    } catch (Throwable $e) {
+        $_SESSION['clinic_profile'] = [];
+    }
+}
+
 function csrf_token(): string
 {
     return $_SESSION['csrf_token'] ?? '';
