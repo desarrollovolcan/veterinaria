@@ -4,22 +4,9 @@ class Auth
 {
     public static function check(): bool
     {
-        if (isset($_SESSION['auth_user']) && is_array($_SESSION['auth_user']) && !empty($_SESSION['auth_user']['id'])) {
-            return true;
-        }
-
-        try {
-            $pdo = Database::connection();
-            $user = $pdo->query("SELECT id, nombre, email, rol FROM system_users WHERE estado = 'ACTIVO' ORDER BY id ASC LIMIT 1")->fetch();
-            if (!$user) {
-                return false;
-            }
-
-            $_SESSION['auth_user'] = self::hydrateSessionUser($user);
-            return !empty($_SESSION['auth_user']['id']);
-        } catch (Throwable $e) {
-            return false;
-        }
+        return isset($_SESSION['auth_user'])
+            && is_array($_SESSION['auth_user'])
+            && !empty($_SESSION['auth_user']['id']);
     }
 
     public static function attempt(string $email, string $password): bool
@@ -86,21 +73,7 @@ class Auth
             return $_SESSION['auth_user'];
         }
 
-        try {
-            $pdo = Database::connection();
-            $user = $pdo->query("SELECT id, nombre, email, rol FROM system_users WHERE estado = 'ACTIVO' ORDER BY id ASC LIMIT 1")->fetch();
-            if (!$user) {
-                $_SESSION['auth_user'] = $default;
-                return $default;
-            }
-
-            $_SESSION['auth_user'] = self::hydrateSessionUser($user);
-
-            return $_SESSION['auth_user'];
-        } catch (Throwable $e) {
-            $_SESSION['auth_user'] = $default;
-            return $default;
-        }
+        return $default;
     }
 
     public static function can(string $permission): bool

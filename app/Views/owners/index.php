@@ -12,11 +12,19 @@ $formData = $editingOwner ?? [
 ];
 ?>
 <style>
-.compact-form .form-label{font-size:.82rem;}
-.compact-form .form-control-sm,.compact-form .default-select{min-height:32px;padding-top:.25rem;padding-bottom:.25rem;}
+.owners-maintenance-theme .compact-form .form-label{font-size:.76rem;margin-bottom:.2rem!important;line-height:1.1;}
+.owners-maintenance-theme .compact-form .form-control,
+.owners-maintenance-theme .compact-form .form-control-sm,
+.owners-maintenance-theme .compact-form .default-select{min-height:28px!important;height:28px!important;padding:.14rem .5rem!important;font-size:.78rem!important;line-height:1.1;}
+.owners-maintenance-theme .compact-form textarea.form-control,
+.owners-maintenance-theme .compact-form textarea.form-control-sm{min-height:48px!important;height:auto!important;padding-top:.28rem!important;padding-bottom:.28rem!important;}
+.owners-maintenance-theme .compact-form .btn{min-height:28px!important;padding:.14rem .55rem!important;font-size:.76rem!important;line-height:1.1;}
+.owners-maintenance-theme .compact-form .btn-sm,.owners-maintenance-theme .compact-form .btn.btn-sm{min-height:24px!important;padding:.08rem .45rem!important;font-size:.7rem!important;}
+.owners-maintenance-theme .compact-form .btn-xs,.owners-maintenance-theme .compact-form .btn.btn-xs{min-height:21px!important;padding:.04rem .35rem!important;font-size:.66rem!important;}
+.owners-maintenance-theme .compact-form.row{--bs-gutter-y:.35rem;--bs-gutter-x:.65rem;}
 </style>
 
-
+<div class="owners-maintenance-theme">
 <div class="form-head mb-sm-4 mb-3 d-flex flex-wrap align-items-center">
     <h2 class="font-w600 title mb-2 me-auto">Mantenimiento de Propietarios</h2>
 </div>
@@ -50,17 +58,17 @@ $formData = $editingOwner ?? [
             </div>
             <div class="col-md-4">
                 <label class="form-label mb-1">Nombre completo <span class="text-danger">*</span></label>
-                <input type="text" class="form-control <?php echo isset($errors['nombre_completo']) ? 'is-invalid' : ''; ?>" name="nombre_completo" value="<?php echo e($formData['nombre_completo']); ?>" required>
+                <input type="text" class="form-control form-control-sm <?php echo isset($errors['nombre_completo']) ? 'is-invalid' : ''; ?>" name="nombre_completo" value="<?php echo e($formData['nombre_completo']); ?>" required>
                 <?php if (isset($errors['nombre_completo'])): ?><div class="invalid-feedback"><?php echo e($errors['nombre_completo']); ?></div><?php endif; ?>
             </div>
             <div class="col-md-3">
                 <label class="form-label mb-1">Teléfono <span class="text-danger">*</span></label>
-                <input type="text" class="form-control <?php echo isset($errors['telefono']) ? 'is-invalid' : ''; ?>" name="telefono" value="<?php echo e($formData['telefono']); ?>" required>
+                <input type="text" class="form-control form-control-sm <?php echo isset($errors['telefono']) ? 'is-invalid' : ''; ?>" name="telefono" value="<?php echo e($formData['telefono']); ?>" required>
                 <?php if (isset($errors['telefono'])): ?><div class="invalid-feedback"><?php echo e($errors['telefono']); ?></div><?php endif; ?>
             </div>
             <div class="col-md-3">
                 <label class="form-label mb-1">Email</label>
-                <input type="email" class="form-control <?php echo isset($errors['email']) ? 'is-invalid' : ''; ?>" name="email" value="<?php echo e($formData['email']); ?>">
+                <input type="email" class="form-control form-control-sm <?php echo isset($errors['email']) ? 'is-invalid' : ''; ?>" name="email" value="<?php echo e($formData['email']); ?>">
                 <?php if (isset($errors['email'])): ?><div class="invalid-feedback"><?php echo e($errors['email']); ?></div><?php endif; ?>
             </div>
             <div class="col-md-4">
@@ -196,3 +204,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+</div>
