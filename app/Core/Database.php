@@ -168,10 +168,19 @@ class Database
 
     private static function ensureColumnExists(PDO $pdo, string $table, string $column, string $definition): void
     {
-        $stmt = $pdo->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE :column');
-        $stmt->execute(['column' => $column]);
+        $schema = (string) $pdo->query('SELECT DATABASE()')->fetchColumn();
 
-        if ($stmt->fetch()) {
+        $stmt = $pdo->prepare(
+            'SELECT 1 FROM information_schema.COLUMNS '
+            . 'WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table AND COLUMN_NAME = :column LIMIT 1'
+        );
+        $stmt->execute([
+            'schema' => $schema,
+            'table' => $table,
+            'column' => $column,
+        ]);
+
+        if ($stmt->fetchColumn()) {
             return;
         }
 
