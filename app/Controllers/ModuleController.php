@@ -91,7 +91,23 @@ class ModuleController extends BaseController
                 }
             }
 
-            $savedId = $this->repo->save($config['table'], $payload, $id ?: null);
+            try {
+                $savedId = $this->repo->save($config['table'], $payload, $id ?: null);
+            } catch (PDOException $e) {
+                $sqlState = (string) ($e->errorInfo[0] ?? $e->getCode());
+                $message = (string) $e->getMessage();
+                $isDuplicate = $sqlState === '23000' && (strpos($message, 'Duplicate entry') !== false || strpos($message, 'UNIQUE') !== false);
+
+                if ($isDuplicate) {
+                    flash('error', 'No se pudo guardar: el valor ingresado ya existe (por ejemplo, email duplicado).');
+                    $_SESSION['_old'] = $_POST;
+                    $url = "index.php?controller=module&action=index&module={$module}" . ($id ? '&edit=' . $id : '');
+                    $this->redirect($url);
+                }
+
+                throw $e;
+            }
+
             if ($module === 'clinic_profile') {
                 $_SESSION['clinic_profile'] = $this->repo->find('clinic_profile', $savedId) ?? [];
             }
