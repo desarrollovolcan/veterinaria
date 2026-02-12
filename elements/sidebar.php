@@ -16,8 +16,8 @@
                     <span class="nav-text">Configuración</span>
                 </a>
                 <ul aria-expanded="true">
-                    <li><a href="index.php?controller=configuracion&action=usuarios">Usuarios</a></li>
-                    <li><a href="index.php?controller=configuracion&action=roles">Roles</a></li>
+                    <li><a href="index.php?controller=configuracion&action=usuarios">Usuario</a></li>
+                    <li><a href="index.php?controller=configuracion&action=roles">Rol</a></li>
                     <li><a href="index.php?controller=configuracion&action=permisos">Permisos</a></li>
                 </ul>
             </li>
