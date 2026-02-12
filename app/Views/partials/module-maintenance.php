@@ -4,6 +4,12 @@ if ($old) {
     $record = array_merge($record, $old);
 }
 ?>
+<style>
+.compact-form .form-label{font-size:.82rem;}
+.compact-form .form-control-sm,.compact-form .default-select{min-height:32px;padding-top:.25rem;padding-bottom:.25rem;}
+</style>
+
+
 <div class="form-head mb-sm-4 mb-3 d-flex flex-wrap align-items-center">
     <h2 class="font-w600 title mb-2 me-auto">Mantenimiento de <?php echo e($config['title']); ?></h2>
 </div>
@@ -14,17 +20,17 @@ if ($old) {
 <div class="card">
     <div class="card-header"><h4 class="card-title mb-0"><?php echo $editing ? 'Editar' : 'Nuevo'; ?> registro</h4></div>
     <div class="card-body">
-        <form method="POST" action="index.php?controller=module&action=index&module=<?php echo e($moduleKey); ?>" class="row">
+        <form method="POST" action="index.php?controller=module&action=index&module=<?php echo e($moduleKey); ?>" class="row g-2 compact-form">
             <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>">
             <input type="hidden" name="id" value="<?php echo e((string) ($record['id'] ?? '')); ?>">
             <?php foreach ($config['fields'] as $field => $meta): ?>
-                <div class="mb-3 col-md-4">
-                    <label class="form-label"><?php echo e($meta['label']); ?></label>
+                <div class="col-md-<?php echo e((string) ($meta['col'] ?? 3)); ?>">
+                    <label class="form-label mb-1"><?php echo e($meta['label']); ?><?php if (($meta['required'] ?? false) && !str_contains($meta['label'], '*')): ?> <span class="text-danger">*</span><?php endif; ?></label>
                     <?php $value = $record[$field] ?? ''; ?>
                     <?php if (($meta['type'] ?? 'text') === 'textarea'): ?>
-                        <textarea class="form-control <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>" rows="2"><?php echo e((string) $value); ?></textarea>
+                        <textarea class="form-control form-control-sm <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>" rows="1"><?php echo e((string) $value); ?></textarea>
                     <?php elseif (($meta['type'] ?? 'text') === 'select'): ?>
-                        <select class="default-select form-control <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>">
+                        <select class="default-select form-control form-control-sm <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>">
                             <option value="">Seleccionar...</option>
                             <?php if (!empty($meta['source'])): ?>
                                 <?php foreach (($options[$meta['source']] ?? []) as $opt): ?>
@@ -37,7 +43,7 @@ if ($old) {
                             <?php endif; ?>
                         </select>
                     <?php else: ?>
-                        <input type="<?php echo e($meta['type'] ?? 'text'); ?>" class="form-control <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>" value="<?php echo e((string) $value); ?>">
+                        <input type="<?php echo e($meta['type'] ?? 'text'); ?>" class="form-control form-control-sm <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>" value="<?php echo e((string) $value); ?>">
                     <?php endif; ?>
                     <?php if (isset($formErrors[$field])): ?><div class="invalid-feedback"><?php echo e($formErrors[$field]); ?></div><?php endif; ?>
                 </div>
@@ -53,11 +59,13 @@ if ($old) {
 <div class="card">
     <div class="card-header"><h4 class="card-title mb-0">Listado</h4></div>
     <div class="card-body">
-        <form class="row mb-4" method="GET" action="index.php">
+        <form class="row g-2 mb-3 compact-form" method="GET" action="index.php">
             <input type="hidden" name="controller" value="module"><input type="hidden" name="action" value="index"><input type="hidden" name="module" value="<?php echo e($moduleKey); ?>">
-            <div class="col-md-6 mb-2"><input type="text" class="form-control" name="q" value="<?php echo e($filters['q']); ?>" placeholder="Buscar..."></div>
-            <div class="col-md-3 mb-2"><select class="default-select form-control" name="estado"><option value="">Todos</option><option value="ACTIVO" <?php echo $filters['estado']==='ACTIVO'?'selected':''; ?>>Activo</option><option value="INACTIVO" <?php echo $filters['estado']==='INACTIVO'?'selected':''; ?>>Inactivo</option></select></div>
-            <div class="col-md-3 mb-2 d-flex gap-2"><button class="btn btn-secondary" type="submit">Filtrar</button><a class="btn btn-outline-secondary" href="index.php?controller=module&action=index&module=<?php echo e($moduleKey); ?>">Limpiar</a></div>
+            <div class="col-md-6"><input type="text" class="form-control form-control-sm" name="q" value="<?php echo e($filters['q']); ?>" placeholder="Buscar..."></div>
+            <?php if ($config['has_estado']): ?>
+                <div class="col-md-3"><select class="default-select form-control form-control-sm" name="estado"><option value="">Todos</option><option value="ACTIVO" <?php echo $filters['estado']==='ACTIVO'?'selected':''; ?>>Activo</option><option value="INACTIVO" <?php echo $filters['estado']==='INACTIVO'?'selected':''; ?>>Inactivo</option></select></div>
+            <?php endif; ?>
+            <div class="col-md-<?php echo $config['has_estado'] ? '3' : '6'; ?> d-flex gap-2"><button class="btn btn-secondary btn-sm" type="submit">Filtrar</button><a class="btn btn-outline-secondary btn-sm" href="index.php?controller=module&action=index&module=<?php echo e($moduleKey); ?>">Limpiar</a></div>
         </form>
 
         <div class="table-responsive">

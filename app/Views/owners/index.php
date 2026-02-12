@@ -11,6 +11,12 @@ $formData = $editingOwner ?? [
     'estado' => 'ACTIVO',
 ];
 ?>
+<style>
+.compact-form .form-label{font-size:.82rem;}
+.compact-form .form-control-sm,.compact-form .default-select{min-height:32px;padding-top:.25rem;padding-bottom:.25rem;}
+</style>
+
+
 <div class="form-head mb-sm-4 mb-3 d-flex flex-wrap align-items-center">
     <h2 class="font-w600 title mb-2 me-auto">Mantenimiento de Propietarios</h2>
 </div>
@@ -34,43 +40,43 @@ $formData = $editingOwner ?? [
         <h4 class="card-title mb-0"><?php echo $isEditing ? 'Editar propietario' : 'Nuevo propietario'; ?></h4>
     </div>
     <div class="card-body">
-        <form method="POST" action="index.php?controller=owners&action=index" class="row">
+        <form method="POST" action="index.php?controller=owners&action=index" class="row g-2 compact-form">
             <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>">
             <input type="hidden" name="id" value="<?php echo e((string) $formData['id']); ?>">
 
-            <div class="mb-3 col-md-3">
-                <label class="form-label">RUT</label>
-                <input type="text" class="form-control" name="rut" value="<?php echo e($formData['rut']); ?>" maxlength="20">
+            <div class="col-md-3">
+                <label class="form-label mb-1">RUT</label>
+                <input type="text" class="form-control form-control-sm" name="rut" value="<?php echo e($formData['rut']); ?>" maxlength="20">
             </div>
-            <div class="mb-3 col-md-5">
-                <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
+            <div class="col-md-4">
+                <label class="form-label mb-1">Nombre completo <span class="text-danger">*</span></label>
                 <input type="text" class="form-control <?php echo isset($errors['nombre_completo']) ? 'is-invalid' : ''; ?>" name="nombre_completo" value="<?php echo e($formData['nombre_completo']); ?>" required>
                 <?php if (isset($errors['nombre_completo'])): ?><div class="invalid-feedback"><?php echo e($errors['nombre_completo']); ?></div><?php endif; ?>
             </div>
-            <div class="mb-3 col-md-4">
-                <label class="form-label">Teléfono <span class="text-danger">*</span></label>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Teléfono <span class="text-danger">*</span></label>
                 <input type="text" class="form-control <?php echo isset($errors['telefono']) ? 'is-invalid' : ''; ?>" name="telefono" value="<?php echo e($formData['telefono']); ?>" required>
                 <?php if (isset($errors['telefono'])): ?><div class="invalid-feedback"><?php echo e($errors['telefono']); ?></div><?php endif; ?>
             </div>
-            <div class="mb-3 col-md-4">
-                <label class="form-label">Email</label>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Email</label>
                 <input type="email" class="form-control <?php echo isset($errors['email']) ? 'is-invalid' : ''; ?>" name="email" value="<?php echo e($formData['email']); ?>">
                 <?php if (isset($errors['email'])): ?><div class="invalid-feedback"><?php echo e($errors['email']); ?></div><?php endif; ?>
             </div>
-            <div class="mb-3 col-md-5">
-                <label class="form-label">Dirección</label>
-                <input type="text" class="form-control" name="direccion" value="<?php echo e($formData['direccion']); ?>">
+            <div class="col-md-4">
+                <label class="form-label mb-1">Dirección</label>
+                <input type="text" class="form-control form-control-sm" name="direccion" value="<?php echo e($formData['direccion']); ?>">
             </div>
-            <div class="mb-3 col-md-3">
-                <label class="form-label">Estado</label>
-                <select class="default-select form-control" name="estado">
+            <div class="col-md-3">
+                <label class="form-label mb-1">Estado</label>
+                <select class="default-select form-control form-control-sm" name="estado">
                     <option value="ACTIVO" <?php echo $formData['estado'] === 'ACTIVO' ? 'selected' : ''; ?>>Activo</option>
                     <option value="INACTIVO" <?php echo $formData['estado'] === 'INACTIVO' ? 'selected' : ''; ?>>Inactivo</option>
                 </select>
             </div>
-            <div class="mb-3 col-12">
-                <label class="form-label">Observación</label>
-                <textarea class="form-control" rows="2" name="observacion"><?php echo e($formData['observacion']); ?></textarea>
+            <div class="col-md-6">
+                <label class="form-label mb-1">Observación</label>
+                <textarea class="form-control form-control-sm" rows="1" name="observacion"><?php echo e($formData['observacion']); ?></textarea>
             </div>
             <div class="col-12 d-flex gap-2">
                 <button class="btn btn-primary" type="submit"><?php echo $isEditing ? 'Actualizar propietario' : 'Guardar propietario'; ?></button>
@@ -85,22 +91,22 @@ $formData = $editingOwner ?? [
         <h4 class="card-title mb-0">Listado de propietarios</h4>
     </div>
     <div class="card-body">
-        <form class="row mb-4" method="GET" action="index.php">
+        <form class="row g-2 mb-3 compact-form" method="GET" action="index.php">
             <input type="hidden" name="controller" value="owners">
             <input type="hidden" name="action" value="index">
-            <div class="col-md-6 mb-2">
-                <input type="text" class="form-control" name="q" placeholder="Buscar por nombre, teléfono o email" value="<?php echo e($filters['q']); ?>">
+            <div class="col-md-6">
+                <input type="text" class="form-control form-control-sm" name="q" placeholder="Buscar por nombre, teléfono o email" value="<?php echo e($filters['q']); ?>">
             </div>
-            <div class="col-md-3 mb-2">
-                <select class="default-select form-control" name="estado">
+            <div class="col-md-3">
+                <select class="default-select form-control form-control-sm" name="estado">
                     <option value="">Todos los estados</option>
                     <option value="ACTIVO" <?php echo $filters['estado'] === 'ACTIVO' ? 'selected' : ''; ?>>Activo</option>
                     <option value="INACTIVO" <?php echo $filters['estado'] === 'INACTIVO' ? 'selected' : ''; ?>>Inactivo</option>
                 </select>
             </div>
-            <div class="col-md-3 mb-2 d-flex gap-2">
-                <button class="btn btn-secondary" type="submit">Filtrar</button>
-                <a class="btn btn-outline-secondary" href="index.php?controller=owners&action=index">Limpiar</a>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-secondary btn-sm" type="submit">Filtrar</button>
+                <a class="btn btn-outline-secondary btn-sm" href="index.php?controller=owners&action=index">Limpiar</a>
             </div>
         </form>
 

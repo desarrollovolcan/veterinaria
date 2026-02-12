@@ -1,19 +1,8 @@
 <?php 
-	require_once __DIR__ . '/config/dz.php';
-	require_once __DIR__ . '/app/bootstrap.php';
-
-	if (($_GET['action'] ?? null) === 'logout') {
-		Auth::logout();
-		header('Location: page-login.php');
-		exit;
-	}
-
-	if (!Auth::check()) {
-		header('Location: page-login.php');
-		exit;
-	}
+	 require_once __DIR__ . '/config/dz.php';
 
 	if (isset($_GET['controller']) && in_array($_GET['controller'], ['owners','module'], true)) {
+		require_once __DIR__ . '/app/bootstrap.php';
 		if ($_GET['controller'] === 'owners') {
 			$controller = new OwnerController();
 		} else {
@@ -22,9 +11,6 @@
 		$controller->index();
 		exit;
 	}
-
-	$authUser = Auth::user();
-	$successMessage = flash('success');
 ?>
 <!DOCTYPE html>
 <html lang="en">
