@@ -67,8 +67,20 @@ function app_str_contains(string $haystack, string $needle): bool
 function is_database_connection_error(Throwable $e): bool
 {
     $message = $e->getMessage();
-    if (app_str_contains($message, 'No se pudo conectar a MySQL') || app_str_contains($message, 'solo soporta MySQL')) {
-        return true;
+    $connectionErrorMarkers = [
+        'No se pudo conectar a MySQL',
+        'solo soporta MySQL',
+        'SQLSTATE',
+        'Access denied',
+        'Connection refused',
+        'Unknown database',
+        'server has gone away',
+    ];
+
+    foreach ($connectionErrorMarkers as $marker) {
+        if (app_str_contains($message, $marker)) {
+            return true;
+        }
     }
 
     $previous = $e->getPrevious();
