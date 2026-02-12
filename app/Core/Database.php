@@ -26,7 +26,13 @@ class Database
             ]);
             self::ensureCoreSchema(self::$connection);
         } catch (Throwable $e) {
-            self::$connection = new PDO('sqlite::memory:');
+            $sqlitePath = getenv('SQLITE_PATH') ?: (__DIR__ . '/../../database/database.sqlite');
+            $sqliteDir = dirname($sqlitePath);
+            if (!is_dir($sqliteDir)) {
+                mkdir($sqliteDir, 0775, true);
+            }
+
+            self::$connection = new PDO('sqlite:' . $sqlitePath);
             self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             self::bootstrapSqlite(self::$connection);
