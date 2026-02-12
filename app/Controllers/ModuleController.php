@@ -87,7 +87,7 @@ class ModuleController extends BaseController
                 $_SESSION['clinic_profile'] = $this->repo->find('clinic_profile', $savedId) ?? [];
             }
             if ($module === 'permissions' || $module === 'users') {
-                unset($_SESSION['auth_user']);
+                Auth::refresh();
             }
             $this->repo->audit($module, $savedId, $id ? 'UPDATE' : 'CREATE', $payload);
             flash('success', $id ? 'Registro actualizado.' : 'Registro creado.');
