@@ -10,23 +10,50 @@ class Database
             return self::$connection;
         }
 
-        $host = getenv('DB_HOST') ?: '127.0.0.1';
-        $port = getenv('DB_PORT') ?: '3306';
-        $database = getenv('DB_NAME') ?: 'veterinaria';
-        $username = getenv('DB_USER') ?: 'root';
-        $password = getenv('DB_PASS') ?: '';
+        $dbConfig = self::databaseConfig();
+        $database = (string) ($dbConfig['name'] ?? 'veterinaria');
+        $username = (string) ($dbConfig['user'] ?? 'root');
+        $password = (string) ($dbConfig['pass'] ?? '');
+        $charset = (string) ($dbConfig['charset'] ?? 'utf8mb4');
+        $port = (string) ($dbConfig['port'] ?? '3306');
 
-        $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $database);
+        $candidates = [];
+        $socket = trim((string) ($dbConfig['socket'] ?? ''));
+        if ($socket !== '') {
+            $candidates[] = [
+                'dsn' => sprintf('mysql:unix_socket=%s;dbname=%s;charset=%s', $socket, $database, $charset),
+                'label' => 'socket ' . $socket,
+            ];
+        }
 
-        try {
-            self::$connection = new PDO($dsn, $username, $password, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]);
-            self::ensureCoreSchema(self::$connection);
-        } catch (Throwable $e) {
-            throw new RuntimeException('No se pudo conectar a MySQL. Revisa DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASS.', 0, $e);
+        $host = trim((string) ($dbConfig['host'] ?? 'localhost'));
+        $hosts = array_values(array_unique(array_filter([$host, 'localhost', '127.0.0.1'])));
+        foreach ($hosts as $candidateHost) {
+            $candidates[] = [
+                'dsn' => sprintf('mysql:host=%s;port=%s;dbname=%s;charset=%s', $candidateHost, $port, $database, $charset),
+                'label' => $candidateHost . ':' . $port,
+            ];
+        }
+
+        $errors = [];
+        foreach ($candidates as $candidate) {
+            try {
+                self::$connection = new PDO($candidate['dsn'], $username, $password, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]);
+                break;
+            } catch (Throwable $e) {
+                $errors[] = $candidate['label'] . ' => ' . $e->getMessage();
+            }
+        }
+
+        if (!(self::$connection instanceof PDO)) {
+            throw new RuntimeException(
+                'No se pudo conectar a MySQL. Revisa DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASS.'
+                . ' Intentos: ' . implode(' | ', $errors)
+            );
         }
 
         $driver = (string) self::$connection->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -36,6 +63,28 @@ class Database
 
         self::ensureCoreSchema(self::$connection);
         return self::$connection;
+    }
+
+    private static function databaseConfig(): array
+    {
+        $fileConfig = [];
+        $configFile = __DIR__ . '/../../config/database.php';
+        if (is_file($configFile)) {
+            $loaded = require $configFile;
+            if (is_array($loaded)) {
+                $fileConfig = $loaded;
+            }
+        }
+
+        return [
+            'host' => getenv('DB_HOST') ?: ($fileConfig['host'] ?? 'localhost'),
+            'port' => getenv('DB_PORT') ?: ($fileConfig['port'] ?? '3306'),
+            'name' => getenv('DB_NAME') ?: ($fileConfig['name'] ?? 'veterinaria'),
+            'user' => getenv('DB_USER') ?: ($fileConfig['user'] ?? 'root'),
+            'pass' => getenv('DB_PASS') ?: ($fileConfig['pass'] ?? ''),
+            'charset' => getenv('DB_CHARSET') ?: ($fileConfig['charset'] ?? 'utf8mb4'),
+            'socket' => getenv('DB_SOCKET') ?: ($fileConfig['socket'] ?? ''),
+        ];
     }
 
     private static function ensureCoreSchema(PDO $pdo): void
