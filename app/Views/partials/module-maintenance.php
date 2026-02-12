@@ -5,8 +5,19 @@ if ($old) {
 }
 ?>
 <style>
-.compact-form .form-label{font-size:.82rem;}
-.compact-form .form-control-sm,.compact-form .default-select{min-height:32px;padding-top:.25rem;padding-bottom:.25rem;}
+.compact-form .form-label{font-size:.76rem;margin-bottom:.2rem!important;line-height:1.1;}
+.compact-form .form-control,
+.compact-form .form-control-sm,
+.compact-form .default-select,
+.compact-form .bootstrap-select .btn,
+.compact-form .bootstrap-select .dropdown-toggle,
+.compact-form .input-group-text{min-height:28px!important;height:28px!important;padding:.14rem .5rem!important;font-size:.78rem!important;line-height:1.1;}
+.compact-form textarea.form-control,
+.compact-form textarea.form-control-sm{min-height:48px!important;height:auto!important;padding-top:.28rem!important;padding-bottom:.28rem!important;}
+.compact-form .btn{min-height:28px!important;padding:.14rem .55rem!important;font-size:.76rem!important;line-height:1.1;}
+.compact-form .btn-sm,.compact-form .btn.btn-sm{min-height:24px!important;padding:.08rem .45rem!important;font-size:.7rem!important;}
+.compact-form .btn-xs,.compact-form .btn.btn-xs{min-height:21px!important;padding:.04rem .35rem!important;font-size:.66rem!important;}
+.compact-form.row{--bs-gutter-y:.35rem;--bs-gutter-x:.65rem;}
 </style>
 
 
