@@ -14,10 +14,15 @@ $configuracionLinks = [
     <div class="deznav-scroll">
         <div class="main-profile">
             <div class="image-bx">
-                <img src="assets/images/Untitled-1.jpg" alt="">
+                <img src="assets/images/Untitled-1.jpg" alt="Panel de administración">
             </div>
             <h5 class="name"><span class="font-w400">Panel</span> Configuración</h5>
             <p class="email">superroot@veterinaria.local</p>
+        </div>
+
+        <div class="menu-summary">
+            <h6>Accesos rápidos</h6>
+            <p>Centraliza usuarios, roles y permisos desde un menú más claro y fácil de navegar.</p>
         </div>
 
         <ul class="metismenu" id="menu">
@@ -25,7 +30,7 @@ $configuracionLinks = [
             <li class="<?= $isConfiguracion ? 'mm-active' : '' ?>">
                 <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="<?= $isConfiguracion ? 'true' : 'false' ?>">
                     <i class="flaticon-381-settings-2"></i>
-                    <span class="nav-text">Configuración</span>
+                    <span class="nav-text">Configuración <span class="menu-pill">3 módulos</span></span>
                 </a>
                 <ul aria-expanded="<?= $isConfiguracion ? 'true' : 'false' ?>" class="<?= $isConfiguracion ? 'mm-show' : '' ?>">
                     <?php foreach ($configuracionLinks as $action => $label): ?>
