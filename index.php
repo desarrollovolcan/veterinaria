@@ -1,5 +1,12 @@
 <?php 
 	 require_once __DIR__ . '/config/dz.php';
+
+	if (isset($_GET['controller']) && $_GET['controller'] === 'owners') {
+		require_once __DIR__ . '/app/bootstrap.php';
+		$controller = new OwnerController();
+		$controller->index();
+		exit;
+	}
 ?>
 <!DOCTYPE html>
 <html lang="en">

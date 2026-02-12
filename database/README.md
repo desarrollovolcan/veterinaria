@@ -10,6 +10,7 @@ Esta carpeta centraliza la base de datos y **todas sus actualizaciones**.
 ## Migraciones actuales
 
 1. `001_initial_schema.sql`: crea esquema de seguridad (usuarios, roles, permisos), inserta permisos base y crea usuario protegido **SuperRoot**.
+2. `002_owners_module.sql`: crea módulo de propietarios (`owners`) + `pets` base + `audit_logs` + permisos `owners.*`.
 
 ## Acceso inicial
 
