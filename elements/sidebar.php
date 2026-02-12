@@ -1,3 +1,15 @@
+<?php
+$currentController = strtolower($_GET['controller'] ?? '');
+$currentAction = strtolower($_GET['action'] ?? '');
+$isConfiguracion = $currentController === 'configuracion';
+
+$configuracionLinks = [
+    'usuarios' => 'Usuarios',
+    'roles' => 'Roles',
+    'permisos' => 'Permisos',
+];
+?>
+
 <div class="deznav">
     <div class="deznav-scroll">
         <div class="main-profile">
@@ -10,15 +22,20 @@
 
         <ul class="metismenu" id="menu">
             <li class="nav-label first">Menú</li>
-            <li>
-                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="true">
+            <li class="<?= $isConfiguracion ? 'mm-active' : '' ?>">
+                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="<?= $isConfiguracion ? 'true' : 'false' ?>">
                     <i class="flaticon-381-settings-2"></i>
                     <span class="nav-text">Configuración</span>
                 </a>
-                <ul aria-expanded="true">
-                    <li><a href="index.php?controller=configuracion&action=usuarios">Usuarios</a></li>
-                    <li><a href="index.php?controller=configuracion&action=roles">Roles</a></li>
-                    <li><a href="index.php?controller=configuracion&action=permisos">Permisos</a></li>
+                <ul aria-expanded="<?= $isConfiguracion ? 'true' : 'false' ?>" class="<?= $isConfiguracion ? 'mm-show' : '' ?>">
+                    <?php foreach ($configuracionLinks as $action => $label): ?>
+                        <?php $isActive = $isConfiguracion && $currentAction === $action; ?>
+                        <li class="<?= $isActive ? 'mm-active' : '' ?>">
+                            <a href="index.php?controller=configuracion&action=<?= urlencode($action) ?>" <?= $isActive ? 'aria-current="page"' : '' ?>>
+                                <?= htmlspecialchars($label) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
                 </ul>
             </li>
         </ul>
