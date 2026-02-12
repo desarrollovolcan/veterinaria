@@ -1,27 +1,25 @@
-# Actualización de Base de Datos
+# Actualización de Base de Datos (MySQL)
 
-## Migraciones a ejecutar (orden)
-1. `database/migrations/001_initial_schema.sql`
-2. `database/migrations/002_owners_module.sql`
-3. `database/migrations/003_vet_clinic_modules.sql`
-4. `database/migrations/004_admin_support_modules.sql`
+## Opción A: instalación limpia (esquema completo)
+Ejecuta un solo archivo:
 
-## Ejecución
 ```bash
-mysql -u root -p < database/migrations/001_initial_schema.sql
-mysql -u root -p < database/migrations/002_owners_module.sql
-mysql -u root -p < database/migrations/003_vet_clinic_modules.sql
-mysql -u root -p < database/migrations/004_admin_support_modules.sql
+mysql -u root -p < database/migrations/006_complete_mysql_schema.sql
 ```
 
-## Alcance de la 004
-- Usuarios/Roles/Permisos (gestión de accesos complementaria).
-- Configuración/parametrización.
-- Catálogos maestros.
-- Servicios y tarifario.
-- Proveedores y compras.
-- Morosos / cuentas por cobrar.
-- Auditoría / bitácora.
-- Documentos / consentimientos.
-- Comunicaciones / recordatorios.
-- Portal cliente / reserva online.
+## Opción B: actualización acumulativa (instalaciones existentes)
+Este script aplica estructura completa y corrige compatibilidad con estructuras anteriores:
+
+```bash
+mysql -u root -p < database/migrations/007_cumulative_update_to_mysql_full.sql
+```
+
+## ¿Qué corrige el acumulativo?
+- Deja el esquema en el formato actual del sistema (`system_users`, `system_roles`, `user_permissions`, etc.).
+- Agrega columnas usadas por el **formulario de Usuarios**: `telefono`, `rut`, `cargo`, `especialidad`, `direccion`, `fecha_ingreso`, `ultimo_acceso`.
+- Crea tablas funcionales faltantes de módulos clínicos/administrativos.
+- Migra usuarios legacy desde `usuarios` hacia `system_users` si la tabla antigua existe.
+
+## Credenciales demo del sistema
+- Email: `superroot@veterinaria.local`
+- Contraseña: `admin123`
