@@ -79,7 +79,7 @@ function render_database_error_page(Throwable $e): void
     echo 'code{background:#f3f4f6;padding:2px 6px;border-radius:4px}</style></head><body><div class="box">';
     echo '<h2>No se pudo conectar a MySQL</h2>';
     echo '<p>El sistema está configurado para funcionar únicamente con MySQL. Ajusta las variables de entorno y vuelve a intentar.</p>';
-    echo '<ul><li><code>DB_HOST</code></li><li><code>DB_PORT</code></li><li><code>DB_NAME</code></li><li><code>DB_USER</code></li><li><code>DB_PASS</code></li><li><code>DB_SOCKET</code> (opcional)</li><li>Archivo <code>config/database.php</code></li></ul>';
+    echo '<ul><li><code>DB_HOST</code></li><li><code>DB_PORT</code></li><li><code>DB_NAME</code></li><li><code>DB_USER</code></li><li><code>DB_PASS</code></li><li><code>DB_SOCKET</code> (opcional)</li><li>Archivo <code>cxbd/database.php</code></li></ul>';
     echo '<p><strong>Detalle:</strong> ' . e($e->getMessage()) . '</p>';
     echo '</div></body></html>';
 }

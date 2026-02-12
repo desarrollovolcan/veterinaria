@@ -68,11 +68,19 @@ class Database
     private static function databaseConfig(): array
     {
         $fileConfig = [];
-        $configFile = __DIR__ . '/../../config/database.php';
-        if (is_file($configFile)) {
+        $configFiles = [
+            __DIR__ . '/../../cxbd/database.php',
+            __DIR__ . '/../../config/database.php',
+        ];
+
+        foreach ($configFiles as $configFile) {
+            if (!is_file($configFile)) {
+                continue;
+            }
             $loaded = require $configFile;
             if (is_array($loaded)) {
                 $fileConfig = $loaded;
+                break;
             }
         }
 
