@@ -57,14 +57,26 @@ class Owner
 
     public function create(array $data, int $actorId): void
     {
-        $sql = 'INSERT INTO owners (rut, nombre_completo, telefono, email, direccion, observacion, estado) VALUES (:rut, :nombre, :telefono, :email, :direccion, :observacion, :estado)';
+        $sql = 'INSERT INTO owners (rut, nombre_completo, telefono_movil, telefono, email, direccion, ciudad, identificacion, idioma, veterinario_derivante, deuda, datos_facturacion, nombres_alternativos, facebook, instagram, cumpleanos, fuente_referencia, observacion, estado) VALUES (:rut, :nombre, :telefono_movil, :telefono, :email, :direccion, :ciudad, :identificacion, :idioma, :veterinario_derivante, :deuda, :datos_facturacion, :nombres_alternativos, :facebook, :instagram, :cumpleanos, :fuente_referencia, :observacion, :estado)';
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([
             'rut' => $data['rut'] ?: null,
             'nombre' => $data['nombre_completo'],
+            'telefono_movil' => $data['telefono_movil'] ?: null,
             'telefono' => $data['telefono'],
             'email' => $data['email'] ?: null,
             'direccion' => $data['direccion'] ?: null,
+            'ciudad' => $data['ciudad'] ?: null,
+            'identificacion' => $data['identificacion'] ?: null,
+            'idioma' => $data['idioma'] ?: 'Español',
+            'veterinario_derivante' => $data['veterinario_derivante'] ?: null,
+            'deuda' => $data['deuda'] ?: null,
+            'datos_facturacion' => $data['datos_facturacion'] ?: null,
+            'nombres_alternativos' => $data['nombres_alternativos'] ?: null,
+            'facebook' => $data['facebook'] ?: null,
+            'instagram' => $data['instagram'] ?: null,
+            'cumpleanos' => $data['cumpleanos'] ?: null,
+            'fuente_referencia' => $data['fuente_referencia'] ?: null,
             'observacion' => $data['observacion'] ?: null,
             'estado' => $data['estado'],
         ]);
@@ -75,15 +87,27 @@ class Owner
 
     public function update(int $id, array $data, int $actorId): void
     {
-        $sql = 'UPDATE owners SET rut=:rut, nombre_completo=:nombre, telefono=:telefono, email=:email, direccion=:direccion, observacion=:observacion, estado=:estado, updated_at=CURRENT_TIMESTAMP WHERE id=:id';
+        $sql = 'UPDATE owners SET rut=:rut, nombre_completo=:nombre, telefono_movil=:telefono_movil, telefono=:telefono, email=:email, direccion=:direccion, ciudad=:ciudad, identificacion=:identificacion, idioma=:idioma, veterinario_derivante=:veterinario_derivante, deuda=:deuda, datos_facturacion=:datos_facturacion, nombres_alternativos=:nombres_alternativos, facebook=:facebook, instagram=:instagram, cumpleanos=:cumpleanos, fuente_referencia=:fuente_referencia, observacion=:observacion, estado=:estado, updated_at=CURRENT_TIMESTAMP WHERE id=:id';
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([
             'id' => $id,
             'rut' => $data['rut'] ?: null,
             'nombre' => $data['nombre_completo'],
+            'telefono_movil' => $data['telefono_movil'] ?: null,
             'telefono' => $data['telefono'],
             'email' => $data['email'] ?: null,
             'direccion' => $data['direccion'] ?: null,
+            'ciudad' => $data['ciudad'] ?: null,
+            'identificacion' => $data['identificacion'] ?: null,
+            'idioma' => $data['idioma'] ?: 'Español',
+            'veterinario_derivante' => $data['veterinario_derivante'] ?: null,
+            'deuda' => $data['deuda'] ?: null,
+            'datos_facturacion' => $data['datos_facturacion'] ?: null,
+            'nombres_alternativos' => $data['nombres_alternativos'] ?: null,
+            'facebook' => $data['facebook'] ?: null,
+            'instagram' => $data['instagram'] ?: null,
+            'cumpleanos' => $data['cumpleanos'] ?: null,
+            'fuente_referencia' => $data['fuente_referencia'] ?: null,
             'observacion' => $data['observacion'] ?: null,
             'estado' => $data['estado'],
         ]);
