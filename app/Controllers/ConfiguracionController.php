@@ -33,18 +33,36 @@ class ConfiguracionController extends BaseController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
+
             if ($action === 'create') {
                 $this->rolModel->create(trim($_POST['nombre'] ?? ''), trim($_POST['descripcion'] ?? ''));
             }
+
+            if ($action === 'update') {
+                $this->rolModel->update(
+                    (int)($_POST['id'] ?? 0),
+                    trim($_POST['nombre'] ?? ''),
+                    trim($_POST['descripcion'] ?? '')
+                );
+            }
+
+            if ($action === 'sync_permisos') {
+                $permisoIds = array_map('intval', $_POST['permiso_ids'] ?? []);
+                $this->rolModel->syncPermisos((int)($_POST['id'] ?? 0), $permisoIds);
+            }
+
             if ($action === 'delete') {
                 $this->rolModel->delete((int)($_POST['id'] ?? 0));
             }
+
             $this->redirect('index.php?controller=configuracion&action=roles');
         }
 
         $this->render('configuracion/roles', [
             'pageTitle' => 'Configuración / Roles',
             'roles' => $this->rolModel->all(),
+            'permisos' => $this->permisoModel->all(),
+            'permisosPorRol' => $this->rolModel->permisosByRol(),
         ]);
     }
 
@@ -52,12 +70,23 @@ class ConfiguracionController extends BaseController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
+
             if ($action === 'create') {
                 $this->permisoModel->create(trim($_POST['nombre'] ?? ''), trim($_POST['descripcion'] ?? ''));
             }
+
+            if ($action === 'update') {
+                $this->permisoModel->update(
+                    (int)($_POST['id'] ?? 0),
+                    trim($_POST['nombre'] ?? ''),
+                    trim($_POST['descripcion'] ?? '')
+                );
+            }
+
             if ($action === 'delete') {
                 $this->permisoModel->delete((int)($_POST['id'] ?? 0));
             }
+
             $this->redirect('index.php?controller=configuracion&action=permisos');
         }
 

@@ -23,6 +23,13 @@ class PermisoModel
         return $stmt->execute();
     }
 
+    public function update(int $id, string $nombre, string $descripcion): bool
+    {
+        $stmt = Database::connection()->prepare('UPDATE permisos SET nombre = ?, descripcion = ? WHERE id = ? AND es_sistema = 0');
+        $stmt->bind_param('ssi', $nombre, $descripcion, $id);
+        return $stmt->execute();
+    }
+
     public function delete(int $id): bool
     {
         $stmt = Database::connection()->prepare('DELETE FROM permisos WHERE id = ? AND es_sistema = 0');
