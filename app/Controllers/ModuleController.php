@@ -19,7 +19,17 @@ class ModuleController extends BaseController
             return;
         }
 
+        if (!Auth::canViewModule($module)) {
+            http_response_code(403);
+            echo 'No tienes permisos para ver este módulo.';
+            return;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Auth::canEditModule($module)) {
+                flash('error', 'Tu perfil tiene acceso solo lectura en este módulo.');
+                $this->redirect("index.php?controller=module&action=index&module={$module}");
+            }
             if (!verify_csrf($_POST['csrf_token'] ?? null)) {
                 flash('error', 'Token de seguridad inválido.');
                 $this->redirect("index.php?controller=module&action=index&module={$module}");
@@ -58,7 +68,27 @@ class ModuleController extends BaseController
                 $this->redirect($url);
             }
 
+            if ($module === 'clinic_profile' && isset($_FILES['logo_file']) && (int) ($_FILES['logo_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../assets/images/clinic';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0775, true);
+                }
+                $ext = strtolower(pathinfo((string) $_FILES['logo_file']['name'], PATHINFO_EXTENSION));
+                $ext = in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'webp'], true) ? $ext : 'png';
+                $target = 'assets/images/clinic/logo-' . time() . '.' . $ext;
+                $fullPath = __DIR__ . '/../../' . $target;
+                if (move_uploaded_file($_FILES['logo_file']['tmp_name'], $fullPath)) {
+                    $payload['logo_path'] = $target;
+                }
+            }
+
             $savedId = $this->repo->save($config['table'], $payload, $id ?: null);
+            if ($module === 'clinic_profile') {
+                $_SESSION['clinic_profile'] = $this->repo->find('clinic_profile', $savedId) ?? [];
+            }
+            if ($module === 'permissions' || $module === 'users') {
+                unset($_SESSION['auth_user']);
+            }
             $this->repo->audit($module, $savedId, $id ? 'UPDATE' : 'CREATE', $payload);
             flash('success', $id ? 'Registro actualizado.' : 'Registro creado.');
             $this->redirect("index.php?controller=module&action=index&module={$module}");
@@ -83,7 +113,7 @@ class ModuleController extends BaseController
             'pets' => $this->repo->options('pets', 'nombre'),
             'vets' => $this->repo->options('vets', 'nombre'),
             'products' => $this->repo->options('products', 'nombre'),
-            'users' => $this->repo->options('usuarios', 'nombre'),
+            'users' => $this->repo->options('system_users', 'nombre'),
             'appointments' => $this->repo->options('appointments', 'motivo'),
         ];
 
@@ -101,6 +131,7 @@ class ModuleController extends BaseController
             'error' => flash('error'),
             'formErrors' => $_SESSION['_form_errors'] ?? [],
             'old' => $_SESSION['_old'] ?? [],
+            'canEdit' => Auth::canEditModule($module),
         ]);
 
         unset($_SESSION['_form_errors'], $_SESSION['_old']);
@@ -223,6 +254,34 @@ class ModuleController extends BaseController
                 'formato' => ['label' => 'Formato', 'type' => 'select', 'options' => ['Pantalla', 'Excel', 'PDF'], 'required' => true, 'col' => 2],
                 'notas' => ['label' => 'Notas', 'type' => 'textarea', 'col' => 3],
             ], 'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'rango_desde' => 'Desde', 'rango_hasta' => 'Hasta', 'formato' => 'Formato']],
+            'users' => ['title' => 'Usuarios', 'table' => 'system_users', 'has_estado' => true, 'search_columns' => ['nombre', 'email', 'rol'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'email' => ['label' => 'Correo', 'type' => 'email', 'required' => true, 'col' => 3],
+                'password' => ['label' => 'Contraseña', 'type' => 'text', 'col' => 2],
+                'rol' => ['label' => 'Rol', 'type' => 'select', 'options' => ['SuperRoot', 'Administrador', 'Veterinario', 'Recepción'], 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'email' => 'Correo', 'rol' => 'Rol', 'estado' => 'Estado']],
+            'roles' => ['title' => 'Roles', 'table' => 'system_roles', 'has_estado' => true, 'search_columns' => ['nombre', 'descripcion'], 'fields' => [
+                'nombre' => ['label' => 'Nombre del rol', 'required' => true, 'col' => 4],
+                'descripcion' => ['label' => 'Descripción', 'type' => 'textarea', 'col' => 6],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Rol', 'descripcion' => 'Descripción', 'estado' => 'Estado']],
+            'permissions' => ['title' => 'Permisos por usuario', 'table' => 'user_permissions', 'has_estado' => true, 'search_columns' => ['module_key'], 'fields' => [
+                'user_id' => ['label' => 'Usuario', 'type' => 'select', 'source' => 'users', 'required' => true, 'col' => 3],
+                'module_key' => ['label' => 'Módulo', 'type' => 'select', 'required' => true, 'options' => ['users', 'roles', 'permissions', 'clinic_profile', 'owners', 'pets', 'vets', 'appointments', 'clinical_visits', 'vaccinations', 'dewormings', 'products', 'invoices', 'reports', 'settings'], 'col' => 3],
+                'can_view' => ['label' => 'Puede ver', 'type' => 'select', 'options' => ['1', '0'], 'required' => true, 'col' => 2],
+                'can_edit' => ['label' => 'Puede editar', 'type' => 'select', 'options' => ['1', '0'], 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'user_id' => 'Usuario', 'module_key' => 'Módulo', 'can_view' => 'Ver', 'can_edit' => 'Editar', 'estado' => 'Estado']],
+            'clinic_profile' => ['title' => 'Configuración de Clínica', 'table' => 'clinic_profile', 'has_estado' => true, 'search_columns' => ['nombre_clinica', 'email', 'telefono'], 'fields' => [
+                'nombre_clinica' => ['label' => 'Nombre clínica', 'required' => true, 'col' => 3],
+                'razon_social' => ['label' => 'Razón social', 'col' => 3],
+                'telefono' => ['label' => 'Teléfono', 'col' => 2],
+                'email' => ['label' => 'Email', 'type' => 'email', 'col' => 2],
+                'direccion' => ['label' => 'Dirección', 'type' => 'textarea', 'col' => 4],
+                'logo_path' => ['label' => 'Logo actual', 'readonly' => true, 'col' => 3],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre_clinica' => 'Clínica', 'telefono' => 'Teléfono', 'email' => 'Email', 'logo_path' => 'Logo', 'estado' => 'Estado']],
             'rbac_access' => ['title' => 'RBAC y Accesos', 'table' => 'access_requests', 'has_estado' => true, 'search_columns' => ['usuario', 'rol', 'permiso'], 'fields' => [
                 'usuario' => ['label' => 'Usuario', 'required' => true, 'col' => 3],
                 'rol' => ['label' => 'Rol', 'required' => true, 'col' => 3],

@@ -24,14 +24,42 @@ class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
+            self::ensureCoreSchema(self::$connection);
         } catch (Throwable $e) {
             self::$connection = new PDO('sqlite::memory:');
             self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             self::bootstrapSqlite(self::$connection);
+            self::ensureCoreSchema(self::$connection);
         }
 
         return self::$connection;
+    }
+
+    private static function ensureCoreSchema(PDO $pdo): void
+    {
+        $driver = (string) $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $isMysql = $driver === 'mysql';
+
+        $sql = $isMysql ? [
+            "CREATE TABLE IF NOT EXISTS system_roles (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(120) NOT NULL, descripcion TEXT, estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS system_users (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(120) NOT NULL, email VARCHAR(180), password VARCHAR(255), rol VARCHAR(80), estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS user_permissions (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, module_key VARCHAR(120) NOT NULL, can_view TINYINT(1) DEFAULT 1, can_edit TINYINT(1) DEFAULT 0, estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS clinic_profile (id INT AUTO_INCREMENT PRIMARY KEY, nombre_clinica VARCHAR(180), razon_social VARCHAR(180), telefono VARCHAR(40), email VARCHAR(180), direccion TEXT, logo_path VARCHAR(255), estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",
+        ] : [
+            "CREATE TABLE IF NOT EXISTS system_roles (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, descripcion TEXT, estado TEXT DEFAULT 'ACTIVO', created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT)",
+            "CREATE TABLE IF NOT EXISTS system_users (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, email TEXT, password TEXT, rol TEXT, estado TEXT DEFAULT 'ACTIVO', created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT)",
+            "CREATE TABLE IF NOT EXISTS user_permissions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, module_key TEXT NOT NULL, can_view INTEGER DEFAULT 1, can_edit INTEGER DEFAULT 0, estado TEXT DEFAULT 'ACTIVO', created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT)",
+            "CREATE TABLE IF NOT EXISTS clinic_profile (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_clinica TEXT, razon_social TEXT, telefono TEXT, email TEXT, direccion TEXT, logo_path TEXT, estado TEXT DEFAULT 'ACTIVO', created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT)",
+        ];
+
+        foreach ($sql as $statement) {
+            $pdo->exec($statement);
+        }
+
+        $pdo->exec("INSERT INTO system_roles (nombre, descripcion, estado) SELECT 'SuperRoot', 'Acceso total del sistema', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM system_roles)");
+        $pdo->exec("INSERT INTO system_users (nombre, email, password, rol, estado) SELECT 'SuperRoot Demo', 'superroot@veterinaria.local', '', 'SuperRoot', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM system_users)");
+        $pdo->exec("INSERT INTO clinic_profile (nombre_clinica, razon_social, telefono, email, direccion, estado) SELECT 'Clínica Veterinaria', 'Clínica Veterinaria', '+56 9 0000 0000', 'contacto@veterinaria.local', 'Dirección principal', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM clinic_profile)");
     }
 
     private static function bootstrapSqlite(PDO $pdo): void
