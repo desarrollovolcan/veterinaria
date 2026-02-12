@@ -15,4 +15,5 @@
 			echo '<link href="'.$asset_url.'" '.$css_class.' rel="stylesheet" type="text/css"/>',PHP_EOL;
 		}
 	}
+	echo '<link href="assets/css/minimal-theme.css" rel="stylesheet" type="text/css"/>',PHP_EOL;
  ?>
