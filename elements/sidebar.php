@@ -11,14 +11,35 @@
         <ul class="metismenu" id="menu">
             <li class="nav-label first">Menú</li>
             <li>
-                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="true">
+                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="false">
                     <i class="flaticon-381-settings-2"></i>
-                    <span class="nav-text">Configuración</span>
+                    <span class="nav-text">Configuración Base</span>
+                </a>
+                <ul aria-expanded="false">
+                    <li><a href="index.php?controller=configuracion&action=usuarios">Usuarios</a></li>
+                    <li><a href="index.php?controller=configuracion&action=roles">Roles</a></li>
+                    <li><a href="index.php?controller=configuracion&action=permisos">Permisos</a></li>
+                </ul>
+            </li>
+            <li>
+                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="true">
+                    <i class="flaticon-381-user"></i>
+                    <span class="nav-text">Módulos Clínicos</span>
                 </a>
                 <ul aria-expanded="true">
-                    <li><a href="index.php?controller=configuracion&action=usuarios">Usuario</a></li>
-                    <li><a href="index.php?controller=configuracion&action=roles">Rol</a></li>
-                    <li><a href="index.php?controller=configuracion&action=permisos">Permisos</a></li>
+                    <li><a href="index.php?controller=owners&action=index">Propietarios</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=pets">Mascotas</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=vets">Veterinarios</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=appointments">Agenda y Citas</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=clinical_visits">Ficha Clínica</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=vaccinations">Vacunas</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=dewormings">Desparasitación</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=products">Inventario/Farmacia</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=invoices">Facturación/Caja</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=hospitalizations">Hospitalización</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=surgeries">Cirugías</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=laboratory_orders">Laboratorio</a></li>
+                    <li><a href="index.php?controller=module&action=index&module=reports">Reportes</a></li>
                 </ul>
             </li>
         </ul>
