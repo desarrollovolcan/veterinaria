@@ -27625,4 +27625,51 @@ body > * {
     [data-theme-version="dark"] .footer .copyright p {
       color: #fff; }
 
+/* Compact UI overrides */
+.form-control,
+.default-select,
+.bootstrap-select .btn,
+.bootstrap-select .dropdown-toggle,
+.input-group-text {
+  min-height: 34px;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  padding-left: 0.65rem;
+  padding-right: 0.65rem;
+  font-size: 0.875rem;
+}
+
+textarea.form-control {
+  min-height: 34px;
+}
+
+.btn {
+  padding: 0.38rem 0.78rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.btn.btn-sm,
+.btn-group-sm > .btn {
+  padding: 0.28rem 0.62rem;
+  font-size: 0.78rem;
+}
+
+.btn.btn-xs {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.72rem;
+}
+
+.card .card-header,
+.card .card-body,
+.card .card-footer {
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+}
+
+.row.g-3,
+.gy-3 {
+  --bs-gutter-y: 0.75rem;
+}
+
 /*# sourceMappingURL=style.css.map */
