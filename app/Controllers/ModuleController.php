@@ -172,6 +172,54 @@ class ModuleController extends BaseController
                 'rango_desde' => ['label' => 'Desde *', 'type' => 'date', 'required' => true], 'rango_hasta' => ['label' => 'Hasta *', 'type' => 'date', 'required' => true],
                 'formato' => ['label' => 'Formato', 'type' => 'select', 'options' => ['Pantalla', 'PDF', 'Excel']], 'notas' => ['label' => 'Notas', 'type' => 'textarea']],
                 'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'rango_desde' => 'Desde', 'rango_hasta' => 'Hasta', 'formato' => 'Formato', 'created_at' => 'Solicitado']],
+
+            'rbac_access' => ['title' => 'Usuarios / Roles / Permisos (Accesos)', 'table' => 'access_requests', 'has_estado' => true, 'search_columns' => ['usuario', 'rol', 'permiso'], 'fields' => [
+                'usuario' => ['label' => 'Usuario *', 'required' => true], 'rol' => ['label' => 'Rol *', 'required' => true],
+                'permiso' => ['label' => 'Permiso *', 'required' => true], 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']],
+                'observacion' => ['label' => 'Observación', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'usuario' => 'Usuario', 'rol' => 'Rol', 'permiso' => 'Permiso', 'estado' => 'Estado']],
+            'settings' => ['title' => 'Configuración / Parametrización', 'table' => 'settings', 'has_estado' => true, 'search_columns' => ['clave', 'valor'], 'fields' => [
+                'clave' => ['label' => 'Clave *', 'required' => true], 'valor' => ['label' => 'Valor *', 'required' => true],
+                'categoria' => ['label' => 'Categoría'], 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']], 'detalle' => ['label' => 'Detalle', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'clave' => 'Clave', 'valor' => 'Valor', 'categoria' => 'Categoría', 'estado' => 'Estado']],
+            'master_catalogs' => ['title' => 'Catálogos Maestros', 'table' => 'master_catalogs', 'has_estado' => true, 'search_columns' => ['tipo', 'nombre'], 'fields' => [
+                'tipo' => ['label' => 'Tipo *', 'type' => 'select', 'options' => ['Especie', 'Raza', 'Vacuna', 'Desparasitación', 'Servicio', 'Diagnóstico'], 'required' => true],
+                'nombre' => ['label' => 'Nombre *', 'required' => true], 'descripcion' => ['label' => 'Descripción'],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']]],
+                'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'nombre' => 'Nombre', 'descripcion' => 'Descripción', 'estado' => 'Estado']],
+            'service_rates' => ['title' => 'Servicios y Tarifario', 'table' => 'service_rates', 'has_estado' => true, 'search_columns' => ['codigo', 'servicio'], 'fields' => [
+                'codigo' => ['label' => 'Código'], 'servicio' => ['label' => 'Servicio *', 'required' => true], 'precio' => ['label' => 'Precio *', 'required' => true],
+                'descuento' => ['label' => 'Descuento'], 'convenio' => ['label' => 'Convenio'], 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']]],
+                'columns' => ['id' => 'ID', 'codigo' => 'Código', 'servicio' => 'Servicio', 'precio' => 'Precio', 'descuento' => 'Desc.', 'estado' => 'Estado']],
+            'suppliers_purchases' => ['title' => 'Proveedores y Compras', 'table' => 'suppliers_purchases', 'has_estado' => true, 'search_columns' => ['proveedor', 'nro_documento'], 'fields' => [
+                'proveedor' => ['label' => 'Proveedor *', 'required' => true], 'nro_documento' => ['label' => 'Nro documento *', 'required' => true],
+                'fecha' => ['label' => 'Fecha *', 'type' => 'date', 'required' => true], 'total' => ['label' => 'Total *', 'required' => true],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']], 'observacion' => ['label' => 'Observación', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'proveedor' => 'Proveedor', 'nro_documento' => 'Documento', 'fecha' => 'Fecha', 'total' => 'Total', 'estado' => 'Estado']],
+            'receivables' => ['title' => 'Morosos / Cuentas por Cobrar', 'table' => 'receivables', 'has_estado' => true, 'search_columns' => ['cliente', 'documento'], 'fields' => [
+                'cliente' => ['label' => 'Cliente *', 'required' => true], 'documento' => ['label' => 'Documento *', 'required' => true],
+                'monto' => ['label' => 'Monto *', 'required' => true], 'vencimiento' => ['label' => 'Vencimiento *', 'type' => 'date', 'required' => true],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']], 'recordatorio' => ['label' => 'Recordatorio', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'cliente' => 'Cliente', 'documento' => 'Documento', 'monto' => 'Monto', 'vencimiento' => 'Vence', 'estado' => 'Estado']],
+            'audit_trail' => ['title' => 'Auditoría / Bitácora', 'table' => 'audit_trail', 'has_estado' => false, 'search_columns' => ['usuario', 'accion', 'modulo'], 'fields' => [
+                'usuario' => ['label' => 'Usuario *', 'required' => true], 'modulo' => ['label' => 'Módulo *', 'required' => true],
+                'accion' => ['label' => 'Acción *', 'required' => true], 'detalle' => ['label' => 'Detalle', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'usuario' => 'Usuario', 'modulo' => 'Módulo', 'accion' => 'Acción', 'created_at' => 'Fecha']],
+            'documents_consents' => ['title' => 'Documentos / Consentimientos', 'table' => 'documents_consents', 'has_estado' => true, 'search_columns' => ['tipo', 'titulo'], 'fields' => [
+                'tipo' => ['label' => 'Tipo *', 'type' => 'select', 'options' => ['Consentimiento', 'Certificado', 'Plantilla'], 'required' => true],
+                'titulo' => ['label' => 'Título *', 'required' => true], 'archivo' => ['label' => 'Archivo/Firma'],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']], 'detalle' => ['label' => 'Detalle', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'titulo' => 'Título', 'archivo' => 'Archivo', 'estado' => 'Estado']],
+            'communications' => ['title' => 'Comunicaciones / Recordatorios', 'table' => 'communications', 'has_estado' => true, 'search_columns' => ['canal', 'destino', 'asunto'], 'fields' => [
+                'canal' => ['label' => 'Canal *', 'type' => 'select', 'options' => ['WhatsApp', 'Email', 'SMS'], 'required' => true],
+                'destino' => ['label' => 'Destino *', 'required' => true], 'asunto' => ['label' => 'Asunto *', 'required' => true],
+                'mensaje' => ['label' => 'Mensaje *', 'type' => 'textarea', 'required' => true], 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']]],
+                'columns' => ['id' => 'ID', 'canal' => 'Canal', 'destino' => 'Destino', 'asunto' => 'Asunto', 'estado' => 'Estado']],
+            'client_portal' => ['title' => 'Portal Cliente / Reserva Online', 'table' => 'client_portal', 'has_estado' => true, 'search_columns' => ['cliente', 'email', 'tipo'], 'fields' => [
+                'cliente' => ['label' => 'Cliente *', 'required' => true], 'email' => ['label' => 'Email *', 'required' => true],
+                'tipo' => ['label' => 'Tipo *', 'type' => 'select', 'options' => ['Reserva', 'Historial', 'Descarga', 'Pago online'], 'required' => true],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO']], 'detalle' => ['label' => 'Detalle', 'type' => 'textarea']],
+                'columns' => ['id' => 'ID', 'cliente' => 'Cliente', 'email' => 'Email', 'tipo' => 'Tipo', 'estado' => 'Estado']],
         ];
     }
 }
