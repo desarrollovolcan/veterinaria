@@ -6,14 +6,13 @@ Esta carpeta centraliza la base de datos y **todas sus actualizaciones**.
 - Cada cambio estructural o de datos debe agregarse en `database/migrations/` con un nuevo archivo SQL incremental.
 - Nunca editar migraciones ya ejecutadas en producción.
 
-## Migraciones actuales
-1. `001_initial_schema.sql`: seguridad base (usuarios, roles, permisos).
-2. `002_owners_module.sql`: módulo de propietarios + auditoría.
-3. `003_vet_clinic_modules.sql`: módulos clínicos y administrativos base.
-4. `004_admin_support_modules.sql`: RBAC/accesos, parametrización, catálogos, tarifario, compras, CxC, bitácora, consentimientos, comunicaciones y portal cliente.
+## Migraciones recomendadas (estado actual)
+1. `006_complete_mysql_schema.sql`: esquema completo para instalación limpia.
+2. `007_cumulative_update_to_mysql_full.sql`: script acumulativo para actualizar instalaciones previas.
+
+## Nota sobre migraciones antiguas
+Las migraciones `001` a `005` se conservan por historial del proyecto, pero el código actual de la app trabaja con el esquema `system_*` + módulos clínicos/administrativos definidos en la migración 006.
 
 ## Acceso inicial
-- Usuario: `superroot`
-- Contraseña temporal: `SuperRoot#2026!`
-
-> Cambiar contraseña luego del primer inicio de sesión.
+- Email: `superroot@veterinaria.local`
+- Contraseña temporal: `admin123`
