@@ -109,6 +109,7 @@ class Database
         $pdo->exec("INSERT INTO clinic_profile (nombre_clinica, razon_social, telefono, email, direccion, estado) SELECT 'Clínica Veterinaria', 'Clínica Veterinaria', '+56 9 0000 0000', 'contacto@veterinaria.local', 'Dirección principal', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM clinic_profile)");
 
         self::ensureUserColumns($pdo);
+        self::ensureOwnerColumns($pdo);
         self::ensureFunctionalSchema($pdo);
     }
 
@@ -123,10 +124,26 @@ class Database
         self::ensureColumnExists($pdo, 'system_users', 'ultimo_acceso', 'DATETIME NULL');
     }
 
+    private static function ensureOwnerColumns(PDO $pdo): void
+    {
+        self::ensureColumnExists($pdo, 'owners', 'telefono_movil', 'VARCHAR(40) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'ciudad', 'VARCHAR(120) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'identificacion', 'VARCHAR(120) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'idioma', "VARCHAR(60) NULL DEFAULT 'Español'");
+        self::ensureColumnExists($pdo, 'owners', 'veterinario_derivante', 'VARCHAR(180) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'deuda', 'DECIMAL(12,2) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'datos_facturacion', 'TEXT NULL');
+        self::ensureColumnExists($pdo, 'owners', 'nombres_alternativos', 'TEXT NULL');
+        self::ensureColumnExists($pdo, 'owners', 'facebook', 'VARCHAR(180) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'instagram', 'VARCHAR(180) NULL');
+        self::ensureColumnExists($pdo, 'owners', 'cumpleanos', 'DATE NULL');
+        self::ensureColumnExists($pdo, 'owners', 'fuente_referencia', 'VARCHAR(120) NULL');
+    }
+
     private static function ensureFunctionalSchema(PDO $pdo): void
     {
         $sql = [
-            "CREATE TABLE IF NOT EXISTS owners (id INT AUTO_INCREMENT PRIMARY KEY, rut VARCHAR(20), nombre_completo VARCHAR(180), telefono VARCHAR(40), email VARCHAR(180), direccion TEXT, observacion TEXT, estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL, deleted_at TIMESTAMP NULL)",
+            "CREATE TABLE IF NOT EXISTS owners (id INT AUTO_INCREMENT PRIMARY KEY, rut VARCHAR(20), nombre_completo VARCHAR(180), telefono_movil VARCHAR(40), telefono VARCHAR(40), email VARCHAR(180), direccion TEXT, ciudad VARCHAR(120), identificacion VARCHAR(120), idioma VARCHAR(60) DEFAULT 'Español', veterinario_derivante VARCHAR(180), deuda DECIMAL(12,2) NULL, datos_facturacion TEXT, nombres_alternativos TEXT, facebook VARCHAR(180), instagram VARCHAR(180), cumpleanos DATE NULL, fuente_referencia VARCHAR(120), observacion TEXT, estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL, deleted_at TIMESTAMP NULL)",
             "CREATE TABLE IF NOT EXISTS pets (id INT AUTO_INCREMENT PRIMARY KEY, owner_id INT, nombre VARCHAR(120), especie VARCHAR(80), raza VARCHAR(120), sexo VARCHAR(20), fecha_nacimiento DATE NULL, microchip VARCHAR(80), esterilizado VARCHAR(20), color VARCHAR(80), peso VARCHAR(40), notas TEXT, estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",
             "CREATE TABLE IF NOT EXISTS vets (id INT AUTO_INCREMENT PRIMARY KEY, usuario_id INT, nombre VARCHAR(120), especialidad VARCHAR(120), firma VARCHAR(255), estado VARCHAR(20) DEFAULT 'ACTIVO', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",
             "CREATE TABLE IF NOT EXISTS appointments (id INT AUTO_INCREMENT PRIMARY KEY, inicio DATETIME NULL, fin DATETIME NULL, vet_id INT, pet_id INT, motivo VARCHAR(255), estado VARCHAR(50), notas TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL)",

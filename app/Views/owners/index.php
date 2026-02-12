@@ -4,9 +4,21 @@ $formData = $editingOwner ?? [
     'id' => '',
     'rut' => '',
     'nombre_completo' => '',
+    'telefono_movil' => '',
     'telefono' => '',
     'email' => '',
     'direccion' => '',
+    'ciudad' => '',
+    'identificacion' => '',
+    'idioma' => 'Español',
+    'veterinario_derivante' => '',
+    'deuda' => '',
+    'datos_facturacion' => '',
+    'nombres_alternativos' => '',
+    'facebook' => '',
+    'instagram' => '',
+    'cumpleanos' => '',
+    'fuente_referencia' => '',
     'observacion' => '',
     'estado' => 'ACTIVO',
 ];
@@ -74,6 +86,69 @@ $formData = $editingOwner ?? [
             <div class="col-md-4">
                 <label class="form-label mb-1">Dirección</label>
                 <input type="text" class="form-control form-control-sm" name="direccion" value="<?php echo e($formData['direccion']); ?>">
+            </div>
+            <div class="col-12 mt-1">
+                <h6 class="mb-1">Campos opcionales</h6>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Teléfono móvil</label>
+                <input type="text" class="form-control form-control-sm" name="telefono_movil" placeholder="Ejemplo: +5491123456789" value="<?php echo e($formData['telefono_movil']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Ciudad</label>
+                <input type="text" class="form-control form-control-sm" name="ciudad" value="<?php echo e($formData['ciudad']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Identificación</label>
+                <input type="text" class="form-control form-control-sm" name="identificacion" value="<?php echo e($formData['identificacion']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Idioma</label>
+                <select class="default-select form-control form-control-sm" name="idioma">
+                    <?php $idiomaActual = $formData['idioma'] ?: 'Español'; ?>
+                    <option value="Español" <?php echo $idiomaActual === 'Español' ? 'selected' : ''; ?>>Español</option>
+                    <option value="Inglés" <?php echo $idiomaActual === 'Inglés' ? 'selected' : ''; ?>>Inglés</option>
+                    <option value="Portugués" <?php echo $idiomaActual === 'Portugués' ? 'selected' : ''; ?>>Portugués</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Veterinario derivante</label>
+                <input type="text" class="form-control form-control-sm" name="veterinario_derivante" value="<?php echo e($formData['veterinario_derivante']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Deuda</label>
+                <input type="text" class="form-control form-control-sm" name="deuda" value="<?php echo e($formData['deuda']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Facebook</label>
+                <input type="text" class="form-control form-control-sm" name="facebook" value="<?php echo e($formData['facebook']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Instagram</label>
+                <input type="text" class="form-control form-control-sm" name="instagram" value="<?php echo e($formData['instagram']); ?>">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label mb-1">Datos de facturación</label>
+                <textarea class="form-control form-control-sm" rows="1" name="datos_facturacion"><?php echo e($formData['datos_facturacion']); ?></textarea>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label mb-1">Nombres alternativos</label>
+                <textarea class="form-control form-control-sm" rows="1" name="nombres_alternativos"><?php echo e($formData['nombres_alternativos']); ?></textarea>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">Cumpleaños</label>
+                <input type="date" class="form-control form-control-sm" name="cumpleanos" value="<?php echo e($formData['cumpleanos']); ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">¿Cómo se enteró de la clínica?</label>
+                <select class="default-select form-control form-control-sm" name="fuente_referencia">
+                    <?php $fuenteActual = $formData['fuente_referencia'] ?? ''; ?>
+                    <option value="" <?php echo $fuenteActual === '' ? 'selected' : ''; ?>>Seleccione</option>
+                    <option value="Recomendación" <?php echo $fuenteActual === 'Recomendación' ? 'selected' : ''; ?>>Recomendación</option>
+                    <option value="Redes sociales" <?php echo $fuenteActual === 'Redes sociales' ? 'selected' : ''; ?>>Redes sociales</option>
+                    <option value="Google" <?php echo $fuenteActual === 'Google' ? 'selected' : ''; ?>>Google</option>
+                    <option value="Otro" <?php echo $fuenteActual === 'Otro' ? 'selected' : ''; ?>>Otro</option>
+                </select>
             </div>
             <div class="col-md-3">
                 <label class="form-label mb-1">Estado</label>
