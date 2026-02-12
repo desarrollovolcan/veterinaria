@@ -40,6 +40,7 @@ $menuGroups = [
         'items' => [
             ['label' => 'Citas', 'module' => 'appointments'],
             ['label' => 'Consultas Clínicas', 'module' => 'clinical_visits'],
+            ['label' => 'Asistente IA', 'module' => 'ai_assistant'],
             ['label' => 'Vacunación', 'module' => 'vaccinations'],
             ['label' => 'Desparasitación', 'module' => 'dewormings'],
             ['label' => 'Hospitalización', 'module' => 'hospitalizations'],

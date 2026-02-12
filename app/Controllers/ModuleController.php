@@ -209,6 +209,17 @@ class ModuleController extends BaseController
                 'receta_json' => ['label' => 'Receta', 'type' => 'textarea', 'col' => 6],
                 'notas' => ['label' => 'Notas', 'type' => 'textarea', 'col' => 6],
             ], 'columns' => ['id' => 'ID', 'fecha' => 'Fecha', 'pet_id' => 'Mascota', 'vet_id' => 'Vet', 'diagnostico' => 'Diagnóstico']],
+            'ai_assistant' => ['title' => 'Asistente IA Clínico', 'table' => 'ai_assistant_suggestions', 'has_estado' => true, 'search_columns' => ['tipo', 'titulo', 'pet_nombre', 'resumen'], 'fields' => [
+                'tipo' => ['label' => 'Tipo sugerencia', 'type' => 'select', 'options' => ['Resumen clínico', 'Recordatorio', 'Riesgo operativo', 'Seguimiento'], 'required' => true, 'col' => 2],
+                'pet_nombre' => ['label' => 'Mascota', 'required' => true, 'col' => 2],
+                'owner_nombre' => ['label' => 'Propietario', 'required' => true, 'col' => 2],
+                'titulo' => ['label' => 'Título', 'required' => true, 'col' => 3],
+                'prioridad' => ['label' => 'Prioridad', 'type' => 'select', 'options' => ['BAJA', 'MEDIA', 'ALTA'], 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 1],
+                'resumen' => ['label' => 'Resumen IA', 'type' => 'textarea', 'required' => true, 'col' => 6],
+                'accion_sugerida' => ['label' => 'Acción sugerida', 'type' => 'textarea', 'col' => 4],
+                'confianza' => ['label' => 'Confianza (%)', 'type' => 'number', 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'pet_nombre' => 'Mascota', 'owner_nombre' => 'Propietario', 'titulo' => 'Título', 'prioridad' => 'Prioridad', 'confianza' => 'Conf.', 'estado' => 'Estado']],
             'vaccinations' => ['title' => 'Vacunas', 'table' => 'vaccinations', 'has_estado' => false, 'search_columns' => ['tipo_vacuna', 'lote'], 'fields' => [
                 'pet_id' => ['label' => 'Mascota', 'type' => 'select', 'source' => 'pets', 'required' => true, 'col' => 3],
                 'tipo_vacuna' => ['label' => 'Tipo vacuna', 'required' => true, 'col' => 3],
@@ -299,7 +310,7 @@ class ModuleController extends BaseController
             ], 'columns' => ['id' => 'ID', 'nombre' => 'Rol', 'descripcion' => 'Descripción', 'estado' => 'Estado']],
             'permissions' => ['title' => 'Permisos por usuario', 'table' => 'user_permissions', 'has_estado' => true, 'search_columns' => ['module_key'], 'fields' => [
                 'user_id' => ['label' => 'Usuario', 'type' => 'select', 'source' => 'users', 'required' => true, 'col' => 3],
-                'module_key' => ['label' => 'Módulo', 'type' => 'select', 'required' => true, 'options' => ['users', 'roles', 'permissions', 'clinic_profile', 'owners', 'pets', 'vets', 'appointments', 'clinical_visits', 'vaccinations', 'dewormings', 'products', 'invoices', 'report_requests', 'settings', 'service_rates', 'suppliers_purchases', 'receivables', 'documents_consents', 'communications', 'client_portal', 'master_catalogs'], 'col' => 3],
+                'module_key' => ['label' => 'Módulo', 'type' => 'select', 'required' => true, 'options' => ['users', 'roles', 'permissions', 'clinic_profile', 'owners', 'pets', 'vets', 'appointments', 'clinical_visits', 'ai_assistant', 'vaccinations', 'dewormings', 'products', 'invoices', 'report_requests', 'settings', 'service_rates', 'suppliers_purchases', 'receivables', 'documents_consents', 'communications', 'client_portal', 'master_catalogs'], 'col' => 3],
                 'can_view' => ['label' => 'Puede ver', 'type' => 'select', 'options' => ['1', '0'], 'required' => true, 'col' => 2],
                 'can_edit' => ['label' => 'Puede editar', 'type' => 'select', 'options' => ['1', '0'], 'required' => true, 'col' => 2],
                 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],

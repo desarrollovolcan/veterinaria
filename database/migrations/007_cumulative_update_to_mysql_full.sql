@@ -368,6 +368,22 @@ CREATE TABLE IF NOT EXISTS client_portal (
     updated_at TIMESTAMP NULL
 );
 
+
+CREATE TABLE IF NOT EXISTS ai_assistant_suggestions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(120) NULL,
+    pet_nombre VARCHAR(120) NULL,
+    owner_nombre VARCHAR(180) NULL,
+    titulo VARCHAR(180) NULL,
+    resumen TEXT NULL,
+    accion_sugerida TEXT NULL,
+    prioridad VARCHAR(20) DEFAULT 'MEDIA',
+    confianza DECIMAL(5,2) NULL,
+    estado VARCHAR(20) DEFAULT 'ACTIVO',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL
+);
+
 INSERT INTO system_roles (nombre, descripcion, estado)
 SELECT 'SuperRoot', 'Acceso total del sistema', 'ACTIVO'
 WHERE NOT EXISTS (SELECT 1 FROM system_roles WHERE nombre = 'SuperRoot');

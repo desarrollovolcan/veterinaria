@@ -8,7 +8,7 @@
 5. Probar filtros y paginación.
 
 ## Módulos cubiertos
-- Propietarios, Mascotas, Veterinarios, Citas, Ficha Clínica, Vacunas, Desparasitación
+- Propietarios, Mascotas, Veterinarios, Citas, Ficha Clínica, Asistente IA, Vacunas, Desparasitación
 - Inventario/Farmacia, Facturación/Caja, Hospitalización, Cirugías, Laboratorio, Reportes
 - RBAC/Accesos, Parametrización, Catálogos Maestros, Servicios/Tarifario
 - Proveedores/Compras, Morosos/CxC, Auditoría/Bitácora
