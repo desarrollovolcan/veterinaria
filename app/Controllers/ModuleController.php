@@ -13,6 +13,9 @@ class ModuleController extends BaseController
     {
         $module = $_GET['module'] ?? '';
         $config = $this->modules()[$module] ?? null;
+        if (isset($config['fields']['module_key']['options']) && $module === 'permissions') {
+            $config['fields']['module_key']['options'] = array_keys($this->modules());
+        }
         if (!$config) {
             http_response_code(404);
             echo 'Módulo no encontrado';
@@ -140,6 +143,8 @@ class ModuleController extends BaseController
             'products' => $this->repo->options('products', 'nombre'),
             'users' => $this->repo->options('system_users', 'nombre'),
             'appointments' => $this->repo->options('appointments', 'motivo'),
+            'clinical_visits' => $this->repo->options('clinical_visits', 'diagnostico'),
+            'hospitalizations' => $this->repo->options('hospitalizations', 'motivo'),
         ];
 
         $view = is_file(__DIR__ . '/../Views/' . $module . '/index.php') ? $module . '/index' : 'modules/index';
@@ -164,7 +169,7 @@ class ModuleController extends BaseController
 
     private function modules(): array
     {
-        return [
+        return array_merge([
             'pets' => ['title' => 'Mascotas', 'table' => 'pets', 'has_estado' => true, 'search_columns' => ['nombre', 'microchip', 'color'], 'fields' => [
                 'owner_id' => ['label' => 'Propietario', 'type' => 'select', 'source' => 'owners', 'required' => true, 'col' => 3],
                 'nombre' => ['label' => 'Nombre mascota', 'required' => true, 'col' => 3],
@@ -395,6 +400,192 @@ class ModuleController extends BaseController
                 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 3],
                 'detalle' => ['label' => 'Detalle', 'type' => 'textarea', 'col' => 6],
             ], 'columns' => ['id' => 'ID', 'cliente' => 'Cliente', 'email' => 'Email', 'tipo' => 'Tipo', 'estado' => 'Estado']],
+        ], $this->requestedModules());
+    }
+
+    private function requestedModules(): array
+    {
+        $withEstado = ['ACTIVO', 'INACTIVO'];
+
+        return [
+            'whatsapp_email_reminders' => ['title' => 'Recordatorios WhatsApp / Email', 'table' => 'whatsapp_email_reminders', 'has_estado' => true, 'search_columns' => ['tipo', 'destino', 'mensaje'], 'fields' => [
+                'tipo' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['WhatsApp', 'Email'], 'required' => true, 'col' => 2],
+                'destino' => ['label' => 'Destino', 'required' => true, 'col' => 3],
+                'fecha_programada' => ['label' => 'Fecha programada', 'type' => 'datetime-local', 'required' => true, 'col' => 3],
+                'mensaje' => ['label' => 'Mensaje', 'type' => 'textarea', 'required' => true, 'col' => 4],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'destino' => 'Destino', 'fecha_programada' => 'Programado', 'estado' => 'Estado']],
+            'marketing_campaigns' => ['title' => 'Campañas de Marketing WhatsApp / Email', 'table' => 'marketing_campaigns', 'has_estado' => true, 'search_columns' => ['nombre', 'canal', 'audiencia'], 'fields' => [
+                'nombre' => ['label' => 'Nombre campaña', 'required' => true, 'col' => 3],
+                'canal' => ['label' => 'Canal', 'type' => 'select', 'options' => ['WhatsApp', 'Email'], 'required' => true, 'col' => 2],
+                'audiencia' => ['label' => 'Audiencia', 'required' => true, 'col' => 3],
+                'contenido' => ['label' => 'Contenido', 'type' => 'textarea', 'required' => true, 'col' => 4],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Campaña', 'canal' => 'Canal', 'audiencia' => 'Audiencia', 'estado' => 'Estado']],
+            'electronic_prescriptions' => ['title' => 'Recetas Electrónicas', 'table' => 'electronic_prescriptions', 'has_estado' => true, 'search_columns' => ['folio', 'indicaciones'], 'fields' => [
+                'clinical_visit_id' => ['label' => 'Ficha clínica', 'type' => 'select', 'source' => 'clinical_visits', 'required' => true, 'col' => 3],
+                'folio' => ['label' => 'Folio', 'required' => true, 'col' => 2],
+                'medicamentos' => ['label' => 'Medicamentos (JSON/texto)', 'type' => 'textarea', 'required' => true, 'col' => 4],
+                'indicaciones' => ['label' => 'Indicaciones', 'type' => 'textarea', 'required' => true, 'col' => 3],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'folio' => 'Folio', 'clinical_visit_id' => 'Ficha', 'estado' => 'Estado']],
+            'dte_management' => ['title' => 'Gestión de DTE', 'table' => 'dte_management', 'has_estado' => true, 'search_columns' => ['tipo_dte', 'folio', 'receptor'], 'fields' => [
+                'tipo_dte' => ['label' => 'Tipo DTE', 'required' => true, 'col' => 2],
+                'folio' => ['label' => 'Folio', 'required' => true, 'col' => 2],
+                'receptor' => ['label' => 'Receptor', 'required' => true, 'col' => 3],
+                'monto' => ['label' => 'Monto', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Emitido', 'Pendiente', 'Anulado'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'tipo_dte' => 'Tipo', 'folio' => 'Folio', 'receptor' => 'Receptor', 'monto' => 'Monto', 'estado' => 'Estado']],
+            'manager_profile' => ['title' => 'Perfil de Gerente', 'table' => 'manager_profile', 'has_estado' => true, 'search_columns' => ['nombre', 'email'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'email' => ['label' => 'Email', 'type' => 'email', 'required' => true, 'col' => 3],
+                'telefono' => ['label' => 'Teléfono', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'email' => 'Email', 'telefono' => 'Teléfono', 'estado' => 'Estado']],
+            'doctor_profile' => ['title' => 'Perfil de Médico', 'table' => 'doctor_profile', 'has_estado' => true, 'search_columns' => ['nombre', 'especialidad'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'especialidad' => ['label' => 'Especialidad', 'col' => 3],
+                'registro' => ['label' => 'Registro profesional', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'especialidad' => 'Especialidad', 'registro' => 'Registro', 'estado' => 'Estado']],
+            'technician_profile' => ['title' => 'Perfil de Técnico', 'table' => 'technician_profile', 'has_estado' => true, 'search_columns' => ['nombre', 'area'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'area' => ['label' => 'Área', 'required' => true, 'col' => 3],
+                'turno' => ['label' => 'Turno', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'area' => 'Área', 'turno' => 'Turno', 'estado' => 'Estado']],
+            'reception_profile' => ['title' => 'Perfil de Recepción', 'table' => 'reception_profile', 'has_estado' => true, 'search_columns' => ['nombre', 'email'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'email' => ['label' => 'Email', 'type' => 'email', 'col' => 3],
+                'telefono' => ['label' => 'Teléfono', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'email' => 'Email', 'telefono' => 'Teléfono', 'estado' => 'Estado']],
+            'cage_management' => ['title' => 'Gestión de Jaulas', 'table' => 'cage_management', 'has_estado' => true, 'search_columns' => ['codigo_jaula', 'ubicacion'], 'fields' => [
+                'codigo_jaula' => ['label' => 'Código jaula', 'required' => true, 'col' => 2],
+                'ubicacion' => ['label' => 'Ubicación', 'required' => true, 'col' => 3],
+                'capacidad' => ['label' => 'Capacidad', 'type' => 'number', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Disponible', 'Ocupada', 'Mantenimiento'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'codigo_jaula' => 'Jaula', 'ubicacion' => 'Ubicación', 'capacidad' => 'Capacidad', 'estado' => 'Estado']],
+            'hospitalized_treatments' => ['title' => 'Tratamientos Hospitalizado', 'table' => 'hospitalized_treatments', 'has_estado' => true, 'search_columns' => ['tratamiento', 'dosis'], 'fields' => [
+                'hospitalization_id' => ['label' => 'Hospitalización', 'type' => 'select', 'source' => 'hospitalizations', 'required' => true, 'col' => 3],
+                'tratamiento' => ['label' => 'Tratamiento', 'required' => true, 'col' => 3],
+                'dosis' => ['label' => 'Dosis', 'col' => 2],
+                'frecuencia' => ['label' => 'Frecuencia', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'hospitalization_id' => 'Hosp.', 'tratamiento' => 'Tratamiento', 'dosis' => 'Dosis', 'estado' => 'Estado']],
+            'hospital_discharge' => ['title' => 'Altas de Hospitalizado', 'table' => 'hospital_discharge', 'has_estado' => true, 'search_columns' => ['indicaciones'], 'fields' => [
+                'hospitalization_id' => ['label' => 'Hospitalización', 'type' => 'select', 'source' => 'hospitalizations', 'required' => true, 'col' => 3],
+                'fecha_alta' => ['label' => 'Fecha alta', 'type' => 'date', 'required' => true, 'col' => 2],
+                'indicaciones' => ['label' => 'Indicaciones', 'type' => 'textarea', 'required' => true, 'col' => 5],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Emitida', 'Pendiente'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'hospitalization_id' => 'Hosp.', 'fecha_alta' => 'Alta', 'estado' => 'Estado']],
+            'pharmacy_sales' => ['title' => 'Ventas Farmacia', 'table' => 'pharmacy_sales', 'has_estado' => true, 'search_columns' => ['folio', 'cliente'], 'fields' => [
+                'folio' => ['label' => 'Folio', 'required' => true, 'col' => 2],
+                'cliente' => ['label' => 'Cliente', 'required' => true, 'col' => 3],
+                'total' => ['label' => 'Total', 'type' => 'number', 'required' => true, 'col' => 2],
+                'medio_pago' => ['label' => 'Medio pago', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Pagada', 'Pendiente', 'Anulada'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'folio' => 'Folio', 'cliente' => 'Cliente', 'total' => 'Total', 'estado' => 'Estado']],
+            'ambulatory_charges' => ['title' => 'Cobros Ambulatoria', 'table' => 'ambulatory_charges', 'has_estado' => true, 'search_columns' => ['boleta', 'cliente'], 'fields' => [
+                'boleta' => ['label' => 'Boleta', 'required' => true, 'col' => 2],
+                'cliente' => ['label' => 'Cliente', 'required' => true, 'col' => 3],
+                'monto' => ['label' => 'Monto', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Pagado', 'Pendiente'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'boleta' => 'Boleta', 'cliente' => 'Cliente', 'monto' => 'Monto', 'estado' => 'Estado']],
+            'hospital_charges' => ['title' => 'Cobros Hospitalizado', 'table' => 'hospital_charges', 'has_estado' => true, 'search_columns' => ['boleta', 'cliente'], 'fields' => [
+                'boleta' => ['label' => 'Boleta', 'required' => true, 'col' => 2],
+                'cliente' => ['label' => 'Cliente', 'required' => true, 'col' => 3],
+                'monto' => ['label' => 'Monto', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Pagado', 'Pendiente'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'boleta' => 'Boleta', 'cliente' => 'Cliente', 'monto' => 'Monto', 'estado' => 'Estado']],
+            'cash_management' => ['title' => 'Gestión de Cajas', 'table' => 'cash_management', 'has_estado' => true, 'search_columns' => ['caja', 'responsable'], 'fields' => [
+                'caja' => ['label' => 'Caja', 'required' => true, 'col' => 2],
+                'responsable' => ['label' => 'Responsable', 'required' => true, 'col' => 3],
+                'saldo_apertura' => ['label' => 'Saldo apertura', 'type' => 'number', 'required' => true, 'col' => 2],
+                'saldo_cierre' => ['label' => 'Saldo cierre', 'type' => 'number', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Abierta', 'Cerrada'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'caja' => 'Caja', 'responsable' => 'Responsable', 'saldo_apertura' => 'Apertura', 'estado' => 'Estado']],
+            'current_accounts' => ['title' => 'Cuentas Corrientes', 'table' => 'current_accounts', 'has_estado' => true, 'search_columns' => ['cliente', 'detalle'], 'fields' => [
+                'cliente' => ['label' => 'Cliente', 'required' => true, 'col' => 3],
+                'detalle' => ['label' => 'Detalle', 'required' => true, 'col' => 4],
+                'saldo' => ['label' => 'Saldo', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Vigente', 'Cerrada'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'cliente' => 'Cliente', 'saldo' => 'Saldo', 'estado' => 'Estado']],
+            'payments_installments' => ['title' => 'Gestión de Abonos', 'table' => 'payments_installments', 'has_estado' => true, 'search_columns' => ['cliente', 'referencia'], 'fields' => [
+                'cliente' => ['label' => 'Cliente', 'required' => true, 'col' => 3],
+                'referencia' => ['label' => 'Referencia', 'required' => true, 'col' => 3],
+                'monto' => ['label' => 'Monto', 'type' => 'number', 'required' => true, 'col' => 2],
+                'fecha' => ['label' => 'Fecha', 'type' => 'date', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Registrado', 'Anulado'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'cliente' => 'Cliente', 'referencia' => 'Referencia', 'monto' => 'Monto', 'fecha' => 'Fecha', 'estado' => 'Estado']],
+            'inventory_count' => ['title' => 'Toma de Inventario', 'table' => 'inventory_count', 'has_estado' => true, 'search_columns' => ['producto', 'responsable'], 'fields' => [
+                'producto' => ['label' => 'Producto', 'required' => true, 'col' => 3],
+                'stock_sistema' => ['label' => 'Stock sistema', 'type' => 'number', 'required' => true, 'col' => 2],
+                'stock_fisico' => ['label' => 'Stock físico', 'type' => 'number', 'required' => true, 'col' => 2],
+                'responsable' => ['label' => 'Responsable', 'required' => true, 'col' => 3],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Abierto', 'Cerrado'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'producto' => 'Producto', 'stock_sistema' => 'Sistema', 'stock_fisico' => 'Físico', 'estado' => 'Estado']],
+            'internal_receipts' => ['title' => 'Boleta Interna', 'table' => 'internal_receipts', 'has_estado' => true, 'search_columns' => ['folio', 'cliente'], 'fields' => [
+                'folio' => ['label' => 'Folio', 'required' => true, 'col' => 2],
+                'cliente' => ['label' => 'Cliente', 'required' => true, 'col' => 3],
+                'detalle' => ['label' => 'Detalle', 'type' => 'textarea', 'required' => true, 'col' => 5],
+                'total' => ['label' => 'Total', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'folio' => 'Folio', 'cliente' => 'Cliente', 'total' => 'Total', 'estado' => 'Estado']],
+            'dte_book' => ['title' => 'Libro DTE', 'table' => 'dte_book', 'has_estado' => true, 'search_columns' => ['periodo', 'resumen'], 'fields' => [
+                'periodo' => ['label' => 'Período', 'required' => true, 'col' => 2],
+                'resumen' => ['label' => 'Resumen', 'type' => 'textarea', 'required' => true, 'col' => 6],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Abierto', 'Cerrado'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'periodo' => 'Período', 'estado' => 'Estado']],
+            'attendance_module' => ['title' => 'Módulo de Asistencia', 'table' => 'attendance_module', 'has_estado' => true, 'search_columns' => ['colaborador', 'turno'], 'fields' => [
+                'colaborador' => ['label' => 'Colaborador', 'required' => true, 'col' => 3],
+                'fecha' => ['label' => 'Fecha', 'type' => 'date', 'required' => true, 'col' => 2],
+                'turno' => ['label' => 'Turno', 'required' => true, 'col' => 2],
+                'asistencia' => ['label' => 'Asistencia', 'type' => 'select', 'options' => ['Presente', 'Ausente', 'Tarde'], 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'colaborador' => 'Colaborador', 'fecha' => 'Fecha', 'turno' => 'Turno', 'asistencia' => 'Asistencia']],
+            'owner_pet_relationship' => ['title' => 'Dueños - Mascotas', 'table' => 'owner_pet_relationship', 'has_estado' => true, 'search_columns' => ['observacion'], 'fields' => [
+                'owner_id' => ['label' => 'Dueño', 'type' => 'select', 'source' => 'owners', 'required' => true, 'col' => 3],
+                'pet_id' => ['label' => 'Mascota', 'type' => 'select', 'source' => 'pets', 'required' => true, 'col' => 3],
+                'observacion' => ['label' => 'Observación', 'type' => 'textarea', 'col' => 4],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'owner_id' => 'Dueño', 'pet_id' => 'Mascota', 'estado' => 'Estado']],
+            'preset_documents' => ['title' => 'Documentos Prestablecidos', 'table' => 'preset_documents', 'has_estado' => true, 'search_columns' => ['nombre', 'tipo'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'tipo' => ['label' => 'Tipo', 'required' => true, 'col' => 3],
+                'contenido' => ['label' => 'Contenido', 'type' => 'textarea', 'required' => true, 'col' => 6],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'tipo' => 'Tipo', 'estado' => 'Estado']],
+            'payment_methods' => ['title' => 'Gestión Medios de Pago', 'table' => 'payment_methods', 'has_estado' => true, 'search_columns' => ['nombre', 'codigo'], 'fields' => [
+                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+                'codigo' => ['label' => 'Código', 'required' => true, 'col' => 2],
+                'comision' => ['label' => 'Comisión (%)', 'type' => 'number', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'codigo' => 'Código', 'comision' => 'Comisión', 'estado' => 'Estado']],
+            'benefits_management' => ['title' => 'Gestión de Prestaciones', 'table' => 'benefits_management', 'has_estado' => true, 'search_columns' => ['prestacion', 'codigo'], 'fields' => [
+                'codigo' => ['label' => 'Código', 'required' => true, 'col' => 2],
+                'prestacion' => ['label' => 'Prestación', 'required' => true, 'col' => 4],
+                'precio' => ['label' => 'Precio', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'codigo' => 'Código', 'prestacion' => 'Prestación', 'precio' => 'Precio', 'estado' => 'Estado']],
+            'exams_management' => ['title' => 'Gestión de Examenes', 'table' => 'exams_management', 'has_estado' => true, 'search_columns' => ['nombre_examen', 'tipo'], 'fields' => [
+                'nombre_examen' => ['label' => 'Examen', 'required' => true, 'col' => 4],
+                'tipo' => ['label' => 'Tipo', 'required' => true, 'col' => 3],
+                'precio' => ['label' => 'Precio', 'type' => 'number', 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => $withEstado, 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre_examen' => 'Examen', 'tipo' => 'Tipo', 'precio' => 'Precio', 'estado' => 'Estado']],
+            'pacs_connections' => ['title' => 'Conexión con PACS DX/US/CT/MR/MG', 'table' => 'pacs_connections', 'has_estado' => true, 'search_columns' => ['nombre', 'modalidad', 'endpoint'], 'fields' => [
+                'nombre' => ['label' => 'Nombre conexión', 'required' => true, 'col' => 3],
+                'modalidad' => ['label' => 'Modalidad', 'type' => 'select', 'options' => ['DX', 'US', 'CT', 'MR', 'MG'], 'required' => true, 'col' => 2],
+                'endpoint' => ['label' => 'Endpoint', 'required' => true, 'col' => 4],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Conectado', 'Desconectado'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'modalidad' => 'Modalidad', 'endpoint' => 'Endpoint', 'estado' => 'Estado']],
+            'medical_payments' => ['title' => 'Gestión de Pagos Médicos', 'table' => 'medical_payments', 'has_estado' => true, 'search_columns' => ['medico', 'periodo'], 'fields' => [
+                'medico' => ['label' => 'Médico', 'required' => true, 'col' => 3],
+                'periodo' => ['label' => 'Período', 'required' => true, 'col' => 2],
+                'monto' => ['label' => 'Monto', 'type' => 'number', 'required' => true, 'col' => 2],
+                'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['Pagado', 'Pendiente'], 'col' => 2],
+            ], 'columns' => ['id' => 'ID', 'medico' => 'Médico', 'periodo' => 'Período', 'monto' => 'Monto', 'estado' => 'Estado']],
         ];
     }
 }
