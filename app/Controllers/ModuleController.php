@@ -82,6 +82,15 @@ class ModuleController extends BaseController
                 }
             }
 
+            if ($module === 'users') {
+                $plainPassword = trim((string) ($payload['password'] ?? ''));
+                if ($plainPassword === '') {
+                    unset($payload['password']);
+                } else {
+                    $payload['password'] = password_hash($plainPassword, PASSWORD_DEFAULT);
+                }
+            }
+
             $savedId = $this->repo->save($config['table'], $payload, $id ?: null);
             if ($module === 'clinic_profile') {
                 $_SESSION['clinic_profile'] = $this->repo->find('clinic_profile', $savedId) ?? [];
@@ -254,13 +263,19 @@ class ModuleController extends BaseController
                 'formato' => ['label' => 'Formato', 'type' => 'select', 'options' => ['Pantalla', 'Excel', 'PDF'], 'required' => true, 'col' => 2],
                 'notas' => ['label' => 'Notas', 'type' => 'textarea', 'col' => 3],
             ], 'columns' => ['id' => 'ID', 'tipo' => 'Tipo', 'rango_desde' => 'Desde', 'rango_hasta' => 'Hasta', 'formato' => 'Formato']],
-            'users' => ['title' => 'Usuarios', 'table' => 'system_users', 'has_estado' => true, 'search_columns' => ['nombre', 'email', 'rol'], 'fields' => [
-                'nombre' => ['label' => 'Nombre', 'required' => true, 'col' => 3],
+            'users' => ['title' => 'Usuarios', 'table' => 'system_users', 'has_estado' => true, 'search_columns' => ['nombre', 'email', 'rol', 'telefono', 'cargo'], 'fields' => [
+                'nombre' => ['label' => 'Nombre completo', 'required' => true, 'col' => 3],
                 'email' => ['label' => 'Correo', 'type' => 'email', 'required' => true, 'col' => 3],
-                'password' => ['label' => 'Contraseña', 'type' => 'text', 'col' => 2],
+                'telefono' => ['label' => 'Teléfono', 'col' => 2],
+                'rut' => ['label' => 'RUT / Documento', 'col' => 2],
+                'cargo' => ['label' => 'Cargo', 'col' => 2],
+                'especialidad' => ['label' => 'Especialidad', 'col' => 3],
+                'direccion' => ['label' => 'Dirección', 'type' => 'textarea', 'col' => 4],
+                'fecha_ingreso' => ['label' => 'Fecha ingreso', 'type' => 'date', 'col' => 2],
+                'password' => ['label' => 'Contraseña (solo si deseas cambiar)', 'type' => 'password', 'col' => 3],
                 'rol' => ['label' => 'Rol', 'type' => 'select', 'options' => ['SuperRoot', 'Administrador', 'Veterinario', 'Recepción'], 'required' => true, 'col' => 2],
                 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],
-            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'email' => 'Correo', 'rol' => 'Rol', 'estado' => 'Estado']],
+            ], 'columns' => ['id' => 'ID', 'nombre' => 'Nombre', 'email' => 'Correo', 'telefono' => 'Teléfono', 'cargo' => 'Cargo', 'rol' => 'Rol', 'estado' => 'Estado']],
             'roles' => ['title' => 'Roles', 'table' => 'system_roles', 'has_estado' => true, 'search_columns' => ['nombre', 'descripcion'], 'fields' => [
                 'nombre' => ['label' => 'Nombre del rol', 'required' => true, 'col' => 4],
                 'descripcion' => ['label' => 'Descripción', 'type' => 'textarea', 'col' => 6],
@@ -268,7 +283,7 @@ class ModuleController extends BaseController
             ], 'columns' => ['id' => 'ID', 'nombre' => 'Rol', 'descripcion' => 'Descripción', 'estado' => 'Estado']],
             'permissions' => ['title' => 'Permisos por usuario', 'table' => 'user_permissions', 'has_estado' => true, 'search_columns' => ['module_key'], 'fields' => [
                 'user_id' => ['label' => 'Usuario', 'type' => 'select', 'source' => 'users', 'required' => true, 'col' => 3],
-                'module_key' => ['label' => 'Módulo', 'type' => 'select', 'required' => true, 'options' => ['users', 'roles', 'permissions', 'clinic_profile', 'owners', 'pets', 'vets', 'appointments', 'clinical_visits', 'vaccinations', 'dewormings', 'products', 'invoices', 'reports', 'settings'], 'col' => 3],
+                'module_key' => ['label' => 'Módulo', 'type' => 'select', 'required' => true, 'options' => ['users', 'roles', 'permissions', 'clinic_profile', 'owners', 'pets', 'vets', 'appointments', 'clinical_visits', 'vaccinations', 'dewormings', 'products', 'invoices', 'report_requests', 'settings', 'service_rates', 'suppliers_purchases', 'receivables', 'documents_consents', 'communications', 'client_portal', 'master_catalogs'], 'col' => 3],
                 'can_view' => ['label' => 'Puede ver', 'type' => 'select', 'options' => ['1', '0'], 'required' => true, 'col' => 2],
                 'can_edit' => ['label' => 'Puede editar', 'type' => 'select', 'options' => ['1', '0'], 'required' => true, 'col' => 2],
                 'estado' => ['label' => 'Estado', 'type' => 'select', 'options' => ['ACTIVO', 'INACTIVO'], 'col' => 2],
