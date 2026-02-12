@@ -70,6 +70,43 @@ class Auth
             'permisos' => [],
             'modulos' => [],
         ];
+
+        try {
+            $pdo = Database::connection();
+            $user = $pdo->query("SELECT id, nombre, rol FROM system_users WHERE estado = 'ACTIVO' ORDER BY id ASC LIMIT 1")->fetch();
+            if (!$user) {
+                $_SESSION['auth_user'] = $default;
+                return $default;
+            }
+
+            $stmt = $pdo->prepare('SELECT module_key, can_view, can_edit FROM user_permissions WHERE user_id = :user_id AND estado = :estado');
+            $stmt->execute(['user_id' => (int) $user['id'], 'estado' => 'ACTIVO']);
+            $rows = $stmt->fetchAll();
+
+            $modules = [];
+            foreach ($rows as $row) {
+                $key = (string) ($row['module_key'] ?? '');
+                if ($key === '') {
+                    continue;
+                }
+                $modules[$key] = [
+                    'view' => (int) ($row['can_view'] ?? 0) === 1,
+                    'edit' => (int) ($row['can_edit'] ?? 0) === 1,
+                ];
+            }
+
+            $_SESSION['auth_user'] = [
+                'id' => (int) $user['id'],
+                'nombre' => (string) $user['nombre'],
+                'rol' => (string) ($user['rol'] ?? 'Sin rol'),
+                'permisos' => array_keys($modules),
+                'modulos' => $modules ?: ['*' => ['view' => true, 'edit' => true]],
+            ];
+        } catch (Throwable $e) {
+            $_SESSION['auth_user'] = $default;
+        }
+
+        return $_SESSION['auth_user'];
     }
 
     public static function can(string $permission): bool
