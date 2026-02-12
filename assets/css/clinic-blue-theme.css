@@ -33,7 +33,8 @@ body{
 .nav-header .brand-title path,.nav-header .logo-abbr .svg-logo-path{fill:#fff!important;}
 .nav-header .logo-abbr .svg-logo-rect{fill:#5ea2ff!important;}
 .header{background:#fff;border-bottom:1px solid var(--clinic-border);}
-.header-content .sub-header{margin-top:.5rem;padding:.55rem .8rem;border:1px solid var(--clinic-border);background:#f8fbff;border-radius:10px;}
+/* remove top gray bar under title */
+.header-content .sub-header{margin-top:.25rem;padding:.1rem 0;border:0;background:transparent;border-radius:0;box-shadow:none;}
 .search-area .form-control,
 .search-area .input-group-text{border-color:var(--clinic-border);background:#fff;}
 
