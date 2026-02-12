@@ -26,19 +26,15 @@ class Database
             ]);
             self::ensureCoreSchema(self::$connection);
         } catch (Throwable $e) {
-            $sqlitePath = getenv('SQLITE_PATH') ?: (__DIR__ . '/../../database/database.sqlite');
-            $sqliteDir = dirname($sqlitePath);
-            if (!is_dir($sqliteDir)) {
-                mkdir($sqliteDir, 0775, true);
-            }
-
-            self::$connection = new PDO('sqlite:' . $sqlitePath);
-            self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            self::bootstrapSqlite(self::$connection);
-            self::ensureCoreSchema(self::$connection);
+            throw new RuntimeException('No se pudo conectar a MySQL. Revisa DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASS.', 0, $e);
         }
 
+        $driver = (string) self::$connection->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver !== 'mysql') {
+            throw new RuntimeException('Conexión inválida: el sistema solo soporta MySQL.');
+        }
+
+        self::ensureCoreSchema(self::$connection);
         return self::$connection;
     }
 
