@@ -25,7 +25,7 @@ if ($old) {
             <input type="hidden" name="id" value="<?php echo e((string) ($record['id'] ?? '')); ?>">
             <?php foreach ($config['fields'] as $field => $meta): ?>
                 <div class="col-md-<?php echo e((string) ($meta['col'] ?? 3)); ?>">
-                    <label class="form-label mb-1"><?php echo e($meta['label']); ?><?php if (($meta['required'] ?? false) && !str_contains($meta['label'], '*')): ?> <span class="text-danger">*</span><?php endif; ?></label>
+                    <label class="form-label mb-1"><?php echo e($meta['label']); ?><?php if (($meta['required'] ?? false) && strpos((string) $meta['label'], '*') === false): ?> <span class="text-danger">*</span><?php endif; ?></label>
                     <?php $value = $record[$field] ?? ''; ?>
                     <?php if (($meta['type'] ?? 'text') === 'textarea'): ?>
                         <textarea class="form-control form-control-sm <?php echo isset($formErrors[$field]) ? 'is-invalid' : ''; ?>" name="<?php echo e($field); ?>" rows="1"><?php echo e((string) $value); ?></textarea>

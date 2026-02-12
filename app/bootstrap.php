@@ -50,17 +50,43 @@ function e(?string $text): string
     return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
 }
 
+
+function app_str_contains(string $haystack, string $needle): bool
+{
+    if ($needle === '') {
+        return true;
+    }
+
+    if (function_exists('str_contains')) {
+        return str_contains($haystack, $needle);
+    }
+
+    return strpos($haystack, $needle) !== false;
+}
+
 function is_database_connection_error(Throwable $e): bool
 {
     $message = $e->getMessage();
-    if (str_contains($message, 'No se pudo conectar a MySQL') || str_contains($message, 'solo soporta MySQL')) {
-        return true;
+    $connectionErrorMarkers = [
+        'No se pudo conectar a MySQL',
+        'solo soporta MySQL',
+        'SQLSTATE',
+        'Access denied',
+        'Connection refused',
+        'Unknown database',
+        'server has gone away',
+    ];
+
+    foreach ($connectionErrorMarkers as $marker) {
+        if (app_str_contains($message, $marker)) {
+            return true;
+        }
     }
 
     $previous = $e->getPrevious();
     while ($previous instanceof Throwable) {
         $prevMessage = $previous->getMessage();
-        if (str_contains($prevMessage, 'SQLSTATE') || str_contains($prevMessage, 'Access denied') || str_contains($prevMessage, 'Connection refused')) {
+        if (app_str_contains($prevMessage, 'SQLSTATE') || app_str_contains($prevMessage, 'Access denied') || app_str_contains($prevMessage, 'Connection refused')) {
             return true;
         }
         $previous = $previous->getPrevious();
@@ -79,7 +105,7 @@ function render_database_error_page(Throwable $e): void
     echo 'code{background:#f3f4f6;padding:2px 6px;border-radius:4px}</style></head><body><div class="box">';
     echo '<h2>No se pudo conectar a MySQL</h2>';
     echo '<p>El sistema está configurado para funcionar únicamente con MySQL. Ajusta las variables de entorno y vuelve a intentar.</p>';
-    echo '<ul><li><code>DB_HOST</code></li><li><code>DB_PORT</code></li><li><code>DB_NAME</code></li><li><code>DB_USER</code></li><li><code>DB_PASS</code></li><li><code>DB_SOCKET</code> (opcional)</li><li>Archivo <code>cxbd/database.php</code></li></ul>';
+    echo '<ul><li><code>DB_HOST</code></li><li><code>DB_PORT</code></li><li><code>DB_NAME</code></li><li><code>DB_USER</code></li><li><code>DB_PASS</code></li><li><code>DB_SOCKET</code> (opcional)</li><li>Archivo <code>config/database.php</code></li></ul>';
     echo '<p><strong>Detalle:</strong> ' . e($e->getMessage()) . '</p>';
     echo '</div></body></html>';
 }
