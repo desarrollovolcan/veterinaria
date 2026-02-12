@@ -58,7 +58,9 @@ class Database
         }
 
         $pdo->exec("INSERT INTO system_roles (nombre, descripcion, estado) SELECT 'SuperRoot', 'Acceso total del sistema', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM system_roles)");
-        $pdo->exec("INSERT INTO system_users (nombre, email, password, rol, estado) SELECT 'SuperRoot Demo', 'superroot@veterinaria.local', '', 'SuperRoot', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM system_users)");
+        $pdo->exec("INSERT INTO system_users (nombre, email, password, rol, estado) SELECT 'SuperRoot Demo', 'superroot@veterinaria.local', '', 'SuperRoot', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM system_users WHERE email = 'superroot@veterinaria.local')");
+        $pdo->exec("INSERT INTO system_users (nombre, email, password, rol, estado) SELECT 'Administrador General', 'admin@veterinaria.local', '\$2y\$12\$GSYpm4btlT7c6OMSz15FYuTk5Lb/ZM1acdBE0rh4mDw6Hd16i8fcS', 'SuperRoot', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM system_users WHERE email = 'admin@veterinaria.local')");
+        $pdo->exec("INSERT INTO user_permissions (user_id, module_key, can_view, can_edit, estado) SELECT su.id, '*', 1, 1, 'ACTIVO' FROM system_users su WHERE su.rol = 'SuperRoot' AND NOT EXISTS (SELECT 1 FROM user_permissions up WHERE up.user_id = su.id AND up.module_key = '*')");
         $pdo->exec("INSERT INTO clinic_profile (nombre_clinica, razon_social, telefono, email, direccion, estado) SELECT 'Clínica Veterinaria', 'Clínica Veterinaria', '+56 9 0000 0000', 'contacto@veterinaria.local', 'Dirección principal', 'ACTIVO' WHERE NOT EXISTS (SELECT 1 FROM clinic_profile)");
     }
 

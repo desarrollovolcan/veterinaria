@@ -6,6 +6,71 @@ $clinicLogo = $_SESSION['clinic_profile']['logo_path'] ?? 'assets/images/Untitle
 $canViewModule = static function (string $module): bool {
     return !class_exists('Auth') || Auth::canViewModule($module);
 };
+
+$menuGroups = [
+    [
+        'label' => 'Dashboard',
+        'icon' => 'flaticon-381-networking',
+        'items' => [
+            ['label' => 'Inicio', 'href' => 'index.php'],
+        ],
+    ],
+    [
+        'label' => 'Administración',
+        'icon' => 'flaticon-381-settings-2',
+        'items' => [
+            ['label' => 'Usuarios', 'module' => 'users'],
+            ['label' => 'Roles', 'module' => 'roles'],
+            ['label' => 'Permisos', 'module' => 'permissions'],
+            ['label' => 'Datos Clínica y Logo', 'module' => 'clinic_profile'],
+        ],
+    ],
+    [
+        'label' => 'Pacientes y Clientes',
+        'icon' => 'flaticon-381-user',
+        'items' => [
+            ['label' => 'Propietarios', 'href' => 'index.php?controller=owners&action=index'],
+            ['label' => 'Mascotas', 'module' => 'pets'],
+            ['label' => 'Veterinarios', 'module' => 'vets'],
+        ],
+    ],
+    [
+        'label' => 'Operaciones Clínicas',
+        'icon' => 'flaticon-381-calendar',
+        'items' => [
+            ['label' => 'Citas', 'module' => 'appointments'],
+            ['label' => 'Consultas Clínicas', 'module' => 'clinical_visits'],
+            ['label' => 'Vacunación', 'module' => 'vaccinations'],
+            ['label' => 'Desparasitación', 'module' => 'dewormings'],
+            ['label' => 'Hospitalización', 'module' => 'hospitalizations'],
+            ['label' => 'Cirugías', 'module' => 'surgeries'],
+            ['label' => 'Órdenes de Laboratorio', 'module' => 'laboratory_orders'],
+        ],
+    ],
+    [
+        'label' => 'Comercial y Caja',
+        'icon' => 'flaticon-381-notebook',
+        'items' => [
+            ['label' => 'Productos e Inventario', 'module' => 'products'],
+            ['label' => 'Facturación', 'module' => 'invoices'],
+            ['label' => 'Servicios y Tarifario', 'module' => 'service_rates'],
+            ['label' => 'Proveedores y Compras', 'module' => 'suppliers_purchases'],
+            ['label' => 'Cuentas por Cobrar', 'module' => 'receivables'],
+        ],
+    ],
+    [
+        'label' => 'Configuración y Reportes',
+        'icon' => 'flaticon-381-file',
+        'items' => [
+            ['label' => 'Catálogos Maestros', 'module' => 'master_catalogs'],
+            ['label' => 'Documentos y Consentimientos', 'module' => 'documents_consents'],
+            ['label' => 'Comunicaciones', 'module' => 'communications'],
+            ['label' => 'Portal del Cliente', 'module' => 'client_portal'],
+            ['label' => 'Solicitudes de Reportes', 'module' => 'report_requests'],
+            ['label' => 'Auditoría', 'module' => 'audit_trail'],
+        ],
+    ],
+];
 ?>
 <div class="deznav">
     <div class="deznav-scroll">
@@ -18,35 +83,36 @@ $canViewModule = static function (string $module): bool {
         </div>
 
         <ul class="metismenu" id="menu">
-            <li class="nav-label first">Menú</li>
-            <li>
-                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="false">
-                    <i class="flaticon-381-settings-2"></i>
-                    <span class="nav-text">1. Administración</span>
-                </a>
-                <ul aria-expanded="false">
-                    <?php if ($canViewModule('users')): ?><li><a href="index.php?controller=module&action=index&module=users">Usuarios</a></li><?php endif; ?>
-                    <?php if ($canViewModule('roles')): ?><li><a href="index.php?controller=module&action=index&module=roles">Roles</a></li><?php endif; ?>
-                    <?php if ($canViewModule('permissions')): ?><li><a href="index.php?controller=module&action=index&module=permissions">Permisos</a></li><?php endif; ?>
-                    <?php if ($canViewModule('clinic_profile')): ?><li><a href="index.php?controller=module&action=index&module=clinic_profile">Datos Clínica y Logo</a></li><?php endif; ?>
-                    <?php if ($canViewModule('master_catalogs')): ?><li><a href="index.php?controller=module&action=index&module=master_catalogs">Catálogos Maestros</a></li><?php endif; ?>
-                    <?php if ($canViewModule('service_rates')): ?><li><a href="index.php?controller=module&action=index&module=service_rates">Servicios y Tarifario</a></li><?php endif; ?>
-                </ul>
-            </li>
+            <li class="nav-label first">Menú principal</li>
+            <?php foreach ($menuGroups as $group): ?>
+                <?php
+                $visibleItems = [];
+                foreach ($group['items'] as $item) {
+                    if (isset($item['module']) && !$canViewModule($item['module'])) {
+                        continue;
+                    }
+                    $visibleItems[] = $item;
+                }
 
-            <li>
-                <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="true">
-                    <i class="flaticon-381-user"></i>
-                    <span class="nav-text">2. Ficha del Cliente</span>
-                </a>
-                <ul aria-expanded="true">
-                    <li><a href="index.php?controller=owners&action=index">Propietarios</a></li>
-                    <?php if ($canViewModule('pets')): ?><li><a href="index.php?controller=module&action=index&module=pets">Mascotas</a></li><?php endif; ?>
-                    <?php if ($canViewModule('vets')): ?><li><a href="index.php?controller=module&action=index&module=vets">Veterinarios</a></li><?php endif; ?>
-                    <?php if ($canViewModule('documents_consents')): ?><li><a href="index.php?controller=module&action=index&module=documents_consents">Documentos y Consentimientos</a></li><?php endif; ?>
-                    <?php if ($canViewModule('client_portal')): ?><li><a href="index.php?controller=module&action=index&module=client_portal">Portal del Cliente</a></li><?php endif; ?>
-                </ul>
-            </li>
+                if (!$visibleItems) {
+                    continue;
+                }
+                ?>
+                <li>
+                    <a class="has-arrow ai-icon" href="javascript:void(0);" aria-expanded="false">
+                        <i class="<?php echo htmlspecialchars((string) $group['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i>
+                        <span class="nav-text"><?php echo htmlspecialchars((string) $group['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                    </a>
+                    <ul aria-expanded="false">
+                        <?php foreach ($visibleItems as $item): ?>
+                            <?php
+                            $href = $item['href'] ?? ('index.php?controller=module&action=index&module=' . $item['module']);
+                            ?>
+                            <li><a href="<?php echo htmlspecialchars((string) $href, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) $item['label'], ENT_QUOTES, 'UTF-8'); ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </li>
+            <?php endforeach; ?>
         </ul>
 
         <div class="copyright">

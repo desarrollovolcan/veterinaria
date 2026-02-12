@@ -184,8 +184,8 @@ class Auth
             $modules = [];
         }
 
-        if (!$modules && (($user['rol'] ?? '') === 'SuperRoot')) {
-            $modules = ['*' => ['view' => true, 'edit' => true]];
+        if (($user['rol'] ?? '') === 'SuperRoot') {
+            $modules['*'] = ['view' => true, 'edit' => true];
         }
 
         return [
